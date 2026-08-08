@@ -1,17 +1,14 @@
-# Traktor Bridge 2.0 - Keyboard Shortcuts
+# Traktor Bridge 2.1.0 - Keyboard Shortcuts
 
 ## Introduction
 
-This document provides a comprehensive reference of all keyboard shortcuts available in Traktor Bridge 2.0, helping you navigate the application efficiently and boost your productivity.
+This document provides a reference of the keyboard shortcuts available in Traktor Bridge 2.1.0.
 
 ## Sources and Attribution
 
 ### Author
-**Benoit (BSM) Saint-Moulin**
-* **Website**: www.benoitsaintmoulin.com
-* **Developer Portfolio**: www.bsm3d.com
-* **GitHub**: [github.com/bsm3d](https://github.com/bsm3d)
-* **Instagram**: [@benoitsaintmoulin](https://www.instagram.com/benoitsaintmoulin)
+**ABUZUCOM**
+* **GitHub**: [github.com/abuzucom](https://github.com/abuzucom)
 
 ## Table of Contents
 
@@ -48,6 +45,6 @@ This document provides a comprehensive reference of all keyboard shortcuts avail
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM**

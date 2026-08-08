@@ -21,11 +21,13 @@ class M3UExporter:
     def __init__(self, output_path: str):
         self.output_path = Path(output_path)
         self.logger = logging.getLogger(__name__)
+        self.errors = 0
     
     def export_playlists(self, playlist_structure: List[Node], 
                         relative_paths: bool = False,
                         copy_music: bool = False) -> Path:
         """Export playlist structure to M3U format."""
+        self.errors = 0
         try:
             self.output_path.mkdir(parents=True, exist_ok=True)
         except Exception as e:
@@ -43,6 +45,9 @@ class M3UExporter:
             relative_paths,
             music_dir
         )
+
+        if self.errors:
+            raise RuntimeError(f"M3U export failed for {self.errors} playlist or track operation(s)")
         
         return self.output_path
     
@@ -76,9 +81,11 @@ class M3UExporter:
                         try:
                             # Normalize Traktor path
                             normalized_path = self._normalize_traktor_path(track.file_path)
-                            
+
                             final_path = normalized_path
-                            if music_dir and os.path.exists(normalized_path):
+                            if music_dir:
+                                if not os.path.exists(normalized_path):
+                                    raise FileNotFoundError(f"Source not found: {normalized_path}")
                                 final_path = self._copy_music_file(track, music_dir, normalized_path)
                                 copied_count += 1
                             
@@ -98,6 +105,7 @@ class M3UExporter:
                             
                         except Exception as e:
                             self.logger.warning(f"Error processing {track.title}: {e}")
+                            self.errors += 1
                             error_count += 1
             
             self.logger.info(f"Exported: {playlist.name} ({len(playlist.tracks)} tracks, {copied_count} copied)")
@@ -105,6 +113,7 @@ class M3UExporter:
             
         except Exception as e:
             self.logger.error(f"Error exporting {playlist.name}: {e}")
+            self.errors += 1
             return None
     
     def _normalize_traktor_path(self, traktor_path: str) -> str:

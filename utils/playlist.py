@@ -98,7 +98,7 @@ class PlaylistDetailsWindow(QDialog):
         layout.addWidget(header_frame)
         
         # Instructions
-        info_label = QLabel("Shortcuts: P = Play/Pause | Click ▶ to play | Double-click Cues to open timeline")
+        info_label = QLabel("Shortcuts: P = Play/Pause | Click Play to start | Double-click Cues to open timeline")
         layout.addWidget(info_label)
         
         # Tracks table
@@ -107,12 +107,12 @@ class PlaylistDetailsWindow(QDialog):
         self.tracks_table.setSelectionMode(QTreeWidget.SelectionMode.SingleSelection)
         self.tracks_table.setRootIsDecorated(False)
         
-        columns = ['▶', '#', 'Artist', 'Title', 'Key', 'BPM', 'Gain', 'Grid', 'Duration', 'Cues', 'Album']
+        columns = ['Play', '#', 'Artist', 'Title', 'Key', 'BPM', 'Gain', 'Grid', 'Duration', 'Cues', 'Album']
         self.tracks_table.setColumnCount(len(columns))
         self.tracks_table.setHeaderLabels(columns)
         
         # Column widths
-        widths = {'▶': 30, '#': 40, 'Artist': 200, 'Title': 280, 'Key': 60, 
+        widths = {'Play': 45, '#': 40, 'Artist': 200, 'Title': 280, 'Key': 60,
                  'BPM': 60, 'Gain': 60, 'Grid': 40, 'Duration': 70, 'Cues': 100, 'Album': 220}
         
         for i, col in enumerate(columns):
@@ -207,7 +207,7 @@ class PlaylistDetailsWindow(QDialog):
             grid_marker = "✓" if track.grid_anchor_ms is not None else ""
             cue_summary = self._get_cue_summary(track.cue_points)
             
-            play_icon = "⏸" if is_playing and track_id == currently_playing_id else "▶"
+            play_icon = "Pause" if is_playing and track_id == currently_playing_id else "Play"
             
             # Set item data
             item.setText(0, play_icon)
@@ -335,7 +335,7 @@ class PlaylistDetailsWindow(QDialog):
                 for i in range(self.tracks_table.topLevelItemCount()):
                     curr_item = self.tracks_table.topLevelItem(i)
                     if curr_item.data(0, Qt.ItemDataRole.UserRole) == current_state['item_id']:
-                        curr_item.setText(0, "▶")
+                        curr_item.setText(0, "Play")
                         break
             
             if current_state['item_id'] == track_id:
@@ -345,7 +345,7 @@ class PlaylistDetailsWindow(QDialog):
             if id(track) == track_id:
                 if track.file_path and os.path.exists(track.file_path):
                     if self.audio_manager.play_file(track.file_path, track_id):
-                        item.setText(0, "⏸")
+                        item.setText(0, "Pause")
                     else:
                         QMessageBox.warning(self, "File Not Found",
                                           "The audio file for this track could not be found.")

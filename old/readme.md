@@ -15,10 +15,10 @@ Here are the Traktor Bridge archives for those who want to explore the early rel
 
 ## License & Usage
 
-**Open Source Project** - Free for educational and personal use
+**License**: MIT License. See the repository `LICENSE` and `NOTICE.md` files.
 
-**Authorized**: Educational use within academic framework, personal modification and use, citation with appropriate author attribution  
-**Restricted**: Commercial use requires prior authorization from the author, redistribution must maintain original copyright notice
+The original upstream copyright and attribution must be retained. ABUZUCOM
+holds copyright for changes in this fork.
 
 **Contact**: GitHub repository for authorization requests
 
@@ -36,4 +36,4 @@ Here are the Traktor Bridge archives for those who want to explore the early rel
 
 ---
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Archived upstream documentation. The current fork is maintained by ABUZUCOM.**

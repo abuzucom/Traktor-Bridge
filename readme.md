@@ -1,28 +1,31 @@
-# Traktor Bridge 2.0
+# Traktor Bridge 2.1.0
 
-**Website & User Guide**: www.traktorbridge.com
+**Fork Maintainer**: ABUZUCOM
+**Repository**: https://github.com/abuzucom/Traktor-Bridge
 
 ## Introduction
 
-**Professional Traktor to Pioneer CDJ Hardware Converter**
+**Traktor to Pioneer CDJ hardware converter**
 
-Convert Native Instruments Traktor playlists to Pioneer CDJ hardware and Rekordbox formats with complete metadata preservation including cue points, loops, BPM, musical keys, and artwork. Now with native CDJ-2000NXS2 hardware support.
+Convert Native Instruments Traktor playlists to Pioneer CDJ hardware and Rekordbox formats while preserving supported metadata including cue points, loops, BPM, musical keys, artwork, and Traktor Pro 4 beat-grid data. Native CDJ-2000NXS2 hardware export is supported.
 
-Traktor Bridge 2.0 is a professional-grade application designed for DJs who want to seamlessly migrate their Traktor collections to Pioneer hardware and Rekordbox software. With complete metadata preservation and native CDJ hardware support, it's the ultimate conversion tool for professional DJs.
+Traktor Bridge 2.1.0 is an application for migrating Traktor collections to Pioneer hardware and Rekordbox software.
 
 ## Sources and Attribution
 
-### Author
-**Benoit (BSM) Saint-Moulin**
-* **Website**: www.benoitsaintmoulin.com
-* **Developer Portfolio**: www.bsm3d.com
-* **GitHub**: [github.com/bsm3d](https://github.com/bsm3d)
-* **Instagram**: [@benoitsaintmoulin](https://www.instagram.com/benoitsaintmoulin)
+### Fork Maintainer
+**ABUZUCOM**
+* **GitHub**: [github.com/abuzucom](https://github.com/abuzucom)
+
+### Original Upstream Project
+Traktor Bridge by Benoit (BSM) Saint-Moulin: https://github.com/bsm3d/Traktor-Bridge
+See [NOTICE.md](NOTICE.md) for the upstream licensing status and attribution terms.
 
 ## Table of Contents
 
 - [Quick Start](#quick-start)
 - [Key Features](#key-features)
+- [Visual System](#visual-system)
 - [Export Formats](#export-formats)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -33,7 +36,10 @@ Traktor Bridge 2.0 is a professional-grade application designed for DJs who want
 - [Configuration Options](#configuration-options)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Troubleshooting](#troubleshooting)
-- [Version 2.0 Improvements](#version-20-improvements)
+- [Traktor Pro 4 Support](#traktor-pro-4-support)
+- [Version 2.1.0 Changes](#version-210-changes)
+- [Changelog](CHANGELOG.md)
+- [Versioning](#versioning)
 - [License & Usage](#license--usage)
 - [Disclaimers & Warranty](#disclaimers--warranty)
 
@@ -43,20 +49,24 @@ Traktor Bridge 2.0 is a professional-grade application designed for DJs who want
 
 ## Quick Start
 
-1. **Download** Traktor Bridge 2.0
-2. **Install dependencies**: `pip install -r requirements.txt`
+1. **Download** Traktor Bridge 2.1.0
+2. **Install dependencies**: `pip install -r requirements.lock`
 3. **Run**: `python main.py`
 
 ## Key Features
 
 - **Native CDJ hardware support** - Direct CDJ-2000NXS2 binary export with PDB DeviceSQL
 - **ANLZ waveform generation** - Creates .DAT/.EXT files for CDJ display
-- **Complete metadata preservation** - Artist, title, BPM, musical key, cue points, artwork
+- **Supported metadata preservation** - Artist, title, BPM, musical key, cue points, artwork, and supported Traktor Pro 4 fields
 - **Multiple export formats** - CDJ hardware, Rekordbox software, XML, M3U playlists
 - **Smart file management** - Automatic file location detection and path sanitization
 - **Audio preview** - Built-in player with timeline visualization
 - **Batch processing** - Convert multiple playlists simultaneously
 - **Cross-platform** - Windows, macOS, Linux support
+
+## Visual System
+
+The interface uses the ABUZUCOM dark theme: Pitch `#0B0B0B`, Charcoal `#242424`, Paper `#EAE7E1`, Concrete `#A6A39D`, and Dull Silver `#74777A`. Display and editorial text use Libre Franklin. Utility text uses Cousine. The tokens live in `ui/brand.py`.
 
 ## Export Formats
 
@@ -74,14 +84,11 @@ Universal playlist format compatible with most DJ software and media players.
 
 ## Installation
 
-**Requirements**: Python 3.13+
+**Requirements**: Python 3.13 or newer
 
 ```bash
-# Core dependencies
-pip install PySide6 pygame tinytag pillow mutagen
-
-# Or install from requirements
-pip install -r requirements.txt
+# Install the pinned dependency set
+pip install -r requirements.lock
 ```
 
 ## Usage
@@ -105,11 +112,17 @@ python main.py
 **Capacity**: Maximum ~10,000 tracks supported by CDJ hardware  
 **Structure**: Automatic `/PIONEER/USBANLZ/` folder creation
 
+### Traktor Pro 4 Support
+
+NML versions 19 and 20 are supported, including Traktor Pro 4 collections that use `VERSION="19+"` or `VERSION="20"`. The parser handles flexible beat-grid markers, cue colors, stem metadata, lock metadata, floating-point playtime, and dynamic smart-list/search expressions.
+
+Dynamic smart-list expressions are preserved for inspection but are not evaluated by Traktor Bridge. Static playlist entries are the supported source for exports.
+
 ## Hardware Compatibility
 
 **CDJ Players**: CDJ-2000NXS2 (primary), CDJ-2000, CDJ-3000  
 **XDJ Players**: XDJ-1000MK2  
-**Software**: Rekordbox 6/7, Serato DJ, VirtualDJ, djay Pro
+**Software**: Rekordbox 6/7, Serato DJ, VirtualDJ, djay Pro, subject to each product's import support
 
 ## Supported Formats
 
@@ -159,25 +172,28 @@ python main.py
 **NML Parse Error**: Close Traktor before conversion  
 **CDJ Not Recognizing USB**: Ensure FAT32 format and proper folder structure  
 **Files Not Found**: Set music root folder for relocated files  
-**Missing Dependencies**: Run `pip install -r requirements.txt`  
+**Missing Dependencies**: Run `python -m pip install -r requirements.lock`. Some optional native packages may require platform build tools.
 **Audio Issues**: Check system audio settings, restart application
 
-## Version 2.0 Improvements
+## Version 2.1.0 Changes
 
-**CDJ Hardware Support**: Native PDB DeviceSQL export replacing SQLite compatibility layer  
-**ANLZ Waveforms**: Full .DAT/.EXT generation for CDJ display compatibility  
-**Enhanced UI**: CDJ-focused workflow with hardware-specific options  
-**Modular Architecture**: Separate exporters for each format with improved maintainability  
-**Performance**: Optimized memory usage and faster conversion processing
+- **Traktor Pro 4**: NML v20 metadata and playlist parsing, including flexible beat grids and stems
+- **Security**: Hardened XML parsing and escaped rich-text log output
+- **Reliability**: Explicit export failure reporting and missing-file validation
+- **Dependencies**: Exact direct pins and a hashed transitive lockfile
+- **Licensing**: MIT license and upstream attribution documented in `LICENSE` and `NOTICE.md`
+
+See the complete [CHANGELOG](CHANGELOG.md).
+
+## Versioning
+
+Traktor Bridge follows [Semantic Versioning 2.0.0](https://semver.org/). The canonical application version is stored in `version.py` and is displayed by the GUI.
 
 ## License & Usage
 
-**Open Source Project** - Free for educational and personal use
+**License**: MIT. The original upstream copyright and attribution are retained; ABUZUCOM holds copyright for fork changes.
 
-**Authorized**: Educational use within academic framework, personal modification and use, citation with appropriate author attribution  
-**Restricted**: Commercial use requires prior authorization from the author, redistribution must maintain original copyright notice
-
-**Contact**: GitHub repository for authorization requests
+See [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md) for details.
 
 ## Disclaimers & Warranty
 
@@ -193,6 +209,6 @@ python main.py
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM**

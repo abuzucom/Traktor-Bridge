@@ -1,17 +1,14 @@
-# Traktor Bridge 2.0 - Export Format Specifications
+# Traktor Bridge 2.1.0 - Export Format Specifications
 
 ## Introduction
 
-This document provides comprehensive technical specifications for all export formats supported by Traktor Bridge 2.0, including CDJ/USB, Rekordbox databases, XML, and M3U formats. Understanding these formats is essential for developers implementing custom exporters or troubleshooting compatibility issues.
+This document provides technical specifications for the export formats supported by Traktor Bridge 2.1.0: CDJ/USB, Rekordbox database, Rekordbox XML, and M3U.
 
 ## Sources and Attribution
 
 ### Author
-**Benoit (BSM) Saint-Moulin**
-* **Website**: www.benoitsaintmoulin.com
-* **Developer Portfolio**: www.bsm3d.com
-* **GitHub**: [github.com/bsm3d](https://github.com/bsm3d)
-* **Instagram**: [@benoitsaintmoulin](https://www.instagram.com/benoitsaintmoulin)
+**ABUZUCOM**
+* **GitHub**: [github.com/abuzucom](https://github.com/abuzucom)
 
 ## Table of Contents
 
@@ -27,7 +24,7 @@ This document provides comprehensive technical specifications for all export for
 
 ## Overview
 
-Traktor Bridge 2.0 supports multiple export formats, each optimized for different use cases and hardware/software compatibility.
+Traktor Bridge 2.1.0 supports multiple export formats, each optimized for different use cases and hardware/software compatibility.
 
 ### Supported Formats
 
@@ -44,7 +41,7 @@ Traktor Bridge 2.0 supports multiple export formats, each optimized for differen
 
 ### Overview
 
-The CDJ/USB format creates a complete Pioneer-compatible USB drive structure for direct playback on CDJ hardware. This is the **primary format** for professional DJ setups.
+The CDJ/USB format creates a complete Pioneer-compatible USB drive structure for direct playback on CDJ hardware. This is the **primary format** for DJ setups.
 
 ### Directory Structure
 
@@ -480,7 +477,7 @@ Standard XML format compatible with Rekordbox and other DJ software (Serato, Vir
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <DJ_PLAYLISTS Version="1.0.0">
-  <PRODUCT Name="Traktor Bridge" Version="2.0" Company="BSM"/>
+  <PRODUCT Name="Traktor Bridge" Version="2.1.0" Company="ABUZUCOM"/>
 
   <COLLECTION Entries="5234">
     <TRACK TrackID="1" Name="Track Title" Artist="Artist Name"
@@ -730,7 +727,7 @@ Playlists/
 - CDJ hardware performance (clubs, events)
 - Offline playback without laptop
 - Complete metadata preservation
-- Professional DJ setups
+- DJ setups
 
 **Rekordbox Database** - Best for:
 - Rekordbox software users
@@ -796,6 +793,6 @@ Playlists/
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM**

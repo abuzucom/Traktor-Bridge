@@ -1,17 +1,14 @@
-# Traktor Bridge 2.0 - Developer Guide
+# Traktor Bridge 2.1.0 - Developer Guide
 
 ## Introduction
 
-This comprehensive developer guide provides everything you need to set up your development environment, contribute to Traktor Bridge 2.0, and extend its functionality. Whether you're adding new export formats, implementing features, or contributing bug fixes, this guide will walk you through the complete development workflow.
+This developer guide covers setup, testing, contribution, and extension of Traktor Bridge 2.1.0.
 
 ## Sources and Attribution
 
 ### Author
-**Benoit (BSM) Saint-Moulin**
-* **Website**: www.benoitsaintmoulin.com
-* **Developer Portfolio**: www.bsm3d.com
-* **GitHub**: [github.com/bsm3d](https://github.com/bsm3d)
-* **Instagram**: [@benoitsaintmoulin](https://www.instagram.com/benoitsaintmoulin)
+**ABUZUCOM**
+* **GitHub**: [github.com/abuzucom](https://github.com/abuzucom)
 
 ## Table of Contents
 
@@ -39,21 +36,20 @@ This comprehensive developer guide provides everything you need to set up your d
 ### Clone Repository
 
 ```bash
-git clone https://github.com/bsm3d/Traktor-Bridge-2.git
-cd Traktor-Bridge-2
+git clone https://github.com/abuzucom/Traktor-Bridge.git
+cd Traktor-Bridge
 ```
 
 ### Install Dependencies
 
 ```bash
-# Core dependencies
-pip install PySide6 pygame tinytag pillow mutagen
+# Application and transitive dependencies
+python -m pip install -r requirements.lock
 
 # Development dependencies
 pip install pytest pytest-cov black pylint mypy
 
-# Optional for enhanced features
-pip install lxml chardet librosa aubio pysqlcipher3
+# Optional native packages may require platform build tools.
 ```
 
 ### Verify Installation
@@ -110,7 +106,7 @@ source venv/bin/activate
 venv\Scripts\activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r requirements.lock
 ```
 
 ---
@@ -692,9 +688,9 @@ designer ui/main_window.ui
 ```bash
 # Fork on GitHub
 # Clone your fork
-git clone https://github.com/your-username/Traktor-Bridge-2.git
-cd Traktor-Bridge-2
-git remote add upstream https://github.com/bsm3d/Traktor-Bridge-2.git
+git clone https://github.com/abuzucom/Traktor-Bridge.git
+cd Traktor-Bridge
+git remote add upstream https://github.com/bsm3d/Traktor-Bridge.git
 ```
 
 2. **Create Feature Branch**
@@ -914,29 +910,13 @@ def safe_operation():
 1. **Update Version**
 
 ```python
-# In main.py
-class AppConfig:
-    VERSION = "2.1.0"
+# In version.py
+__version__ = "2.1.0"
 ```
 
 2. **Update CHANGELOG**
 
-```markdown
-# Changelog
-
-## [2.1.0] - 2024-11-17
-
-### Added
-- New export format support
-- Enhanced key translation
-
-### Fixed
-- CDJ path hashing bug
-- Memory leak in audio player
-
-### Changed
-- Improved performance for large collections
-```
+Update the repository root [CHANGELOG.md](../CHANGELOG.md), which is the authoritative release history.
 
 3. **Run Tests**
 
@@ -952,8 +932,8 @@ mypy exporter/ parser/ utils/
 # Create distribution
 python setup.py sdist bdist_wheel
 
-# Test installation
-pip install dist/traktor_bridge-2.1.0-py3-none-any.whl
+# Test installation, when a distribution package is available
+python -m pip install dist/traktor_bridge-2.1.0-py3-none-any.whl
 ```
 
 5. **Tag Release**
@@ -1014,6 +994,6 @@ def register_plugin(plugin_class):
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM**

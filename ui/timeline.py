@@ -8,6 +8,7 @@ from typing import List, Dict
 from PySide6.QtWidgets import *
 from PySide6.QtCore import Qt, QRectF, QRect, QPoint
 from PySide6.QtGui import QPen, QColor, QBrush, QFont, QPainter
+from ui.brand import BRAND_COLORS, BRAND_FONTS
 
 
 class TimelineDialog(QDialog):
@@ -21,6 +22,22 @@ class TimelineDialog(QDialog):
         self.setWindowTitle(f"Cue Points: {track.artist} - {track.title}")
         self.resize(700, 500)
         self.setModal(True)
+        self.setStyleSheet(f"""
+            QDialog {{
+                background-color: {BRAND_COLORS['bg_dark']};
+                color: {BRAND_COLORS['fg_light']};
+                font-family: '{BRAND_FONTS['editorial']}';
+            }}
+            QPushButton, QCheckBox, QComboBox, QTableWidget {{
+                font-family: '{BRAND_FONTS['utility']}';
+            }}
+            QPushButton, QCheckBox, QComboBox, QTreeWidget {{
+                background-color: {BRAND_COLORS['bg_med']};
+                color: {BRAND_COLORS['fg_light']};
+                border: none;
+                padding: 6px;
+            }}
+        """)
         
         # Filter relevant cue points
         from utils.playlist import CueType
@@ -54,8 +71,8 @@ class TimelineDialog(QDialog):
         header_frame = QFrame()
         header_layout = QVBoxLayout(header_frame)
         
-        title_label = QLabel(f"🎵 {self.track.artist} - {self.track.title}")
-        title_label.setStyleSheet("font-size: 14pt; font-weight: bold;")
+        title_label = QLabel(f"{self.track.artist} - {self.track.title}")
+        title_label.setStyleSheet(f"font-family: '{BRAND_FONTS['display']}'; font-size: 14pt; font-weight: 900;")
         
         # Track info
         info_text = f"BPM: {self.track.bpm:.1f} | Duration: {int(self.track.playtime // 60)}:{int(self.track.playtime % 60):02d}"
@@ -71,7 +88,7 @@ class TimelineDialog(QDialog):
             info_text += f" | Grid Anchor: {grid_time}"
             
         info_label = QLabel(info_text)
-        info_label.setStyleSheet("color: #adb5bd;")
+        info_label.setStyleSheet(f"color: {BRAND_COLORS['fg_muted']};")
         
         header_layout.addWidget(title_label)
         header_layout.addWidget(info_label)
@@ -82,7 +99,7 @@ class TimelineDialog(QDialog):
         filter_layout = QHBoxLayout(filter_frame)
         
         stats_label = QLabel(self._get_cue_stats())
-        stats_label.setStyleSheet("font-weight: bold;")
+        stats_label.setStyleSheet("font-weight: 500;")
         
         filter_label = QLabel("Filter:")
         self.hotcue_check = QCheckBox("Hot Cues")
@@ -159,7 +176,7 @@ class TimelineDialog(QDialog):
                 self.track = track
                 self.cue_points = cue_points
                 self.setMinimumHeight(100)
-                self.setStyleSheet("background-color: #343a40;")
+                self.setStyleSheet(f"background-color: {BRAND_COLORS['bg_med']};")
                 
                 self.show_hotcues = True
                 self.show_memory_cues = True
@@ -181,8 +198,8 @@ class TimelineDialog(QDialog):
                 height = self.height()
                 
                 # Background gradient
-                gradient = QColor('#343a40')
-                gradient_dark = QColor('#212529')
+                gradient = QColor(BRAND_COLORS['bg_med'])
+                gradient_dark = QColor(BRAND_COLORS['bg_dark'])
                 for y in range(height):
                     blend_factor = y / height
                     color = QColor(
@@ -194,12 +211,12 @@ class TimelineDialog(QDialog):
                     painter.drawLine(0, y, width, y)
                 
                 # Main timeline
-                painter.setPen(QPen(QColor('#888888'), 2))
+                painter.setPen(QPen(QColor(BRAND_COLORS['bg_light']), 2))
                 mid_y = height // 2
                 painter.drawLine(10, mid_y, width - 10, mid_y)
                 
                 # Simulated waveform
-                wave_color = QColor('#555555')
+                wave_color = QColor(BRAND_COLORS['bg_light'])
                 painter.setPen(QPen(wave_color, 1))
                 
                 for x in range(10, width - 10, 2):
@@ -218,7 +235,7 @@ class TimelineDialog(QDialog):
                     seconds = seconds % 60
                     return f"{minutes:02d}:{seconds:05.2f}"
                 
-                painter.setPen(QPen(QColor('#AAAAAA'), 1))
+                painter.setPen(QPen(QColor(BRAND_COLORS['fg_muted']), 1))
                 for i in range(6):
                     x_pos = 10 + (i * ((width - 20) / 5))
                     time_pos = (i / 5) * total_duration
@@ -230,7 +247,7 @@ class TimelineDialog(QDialog):
                 # Grid anchor
                 if self.show_grid and self.track.grid_anchor_ms is not None:
                     grid_pos = 10 + ((self.track.grid_anchor_ms / total_duration) * (width - 20))
-                    grid_color = QColor('#00FFFF')
+                    grid_color = QColor(BRAND_COLORS['accent'])
                     painter.setPen(QPen(grid_color, 1, Qt.PenStyle.DashLine))
                     painter.drawLine(int(grid_pos), 10, int(grid_pos), height - 10)
                     
@@ -249,9 +266,9 @@ class TimelineDialog(QDialog):
                 # Cue points with colors
                 from utils.playlist import CueType
                 cue_colors = {
-                    CueType.HOT_CUE.value: QColor('#ff4d4d'),
-                    CueType.LOAD.value: QColor('#4da6ff'),
-                    CueType.LOOP.value: QColor('#4dff88')
+                    CueType.HOT_CUE.value: QColor(BRAND_COLORS['fg_light']),
+                    CueType.LOAD.value: QColor(BRAND_COLORS['fg_muted']),
+                    CueType.LOOP.value: QColor(BRAND_COLORS['bg_light'])
                 }
                 
                 filtered_cues = [c for c in self.cue_points if self._is_visible(c)]
@@ -269,7 +286,7 @@ class TimelineDialog(QDialog):
                             # Hot Cue - Square with number
                             size = 12
                             painter.drawRect(int(position) - size//2, mid_y - size//2, size, size)
-                            painter.setPen(QPen(QColor('#FFFFFF'), 1))
+                            painter.setPen(QPen(QColor(BRAND_COLORS['fg_light']), 1))
                             hotcue_num = str(cue.get('hotcue', '-'))
                             painter.drawText(QRect(int(position) - 6, mid_y - 7, 12, 14), 
                                           Qt.AlignmentFlag.AlignCenter, hotcue_num)
@@ -342,7 +359,7 @@ class TimelineDialog(QDialog):
             grid_item.setText(5, f"BPM: {self.track.bpm:.2f}")
             
             for col in range(6):
-                grid_item.setForeground(col, QColor('#00FFFF'))
+                    grid_item.setForeground(col, QColor(BRAND_COLORS['accent']))
                 
             table.addTopLevelItem(grid_item)
         
@@ -386,11 +403,11 @@ class TimelineDialog(QDialog):
             
             # Color coding
             if cue_type == CueType.HOT_CUE.value:
-                item.setForeground(2, QColor('#ff4d4d'))
+                    item.setForeground(2, QColor(BRAND_COLORS['fg_light']))
             elif cue_type == CueType.LOAD.value:
-                item.setForeground(2, QColor('#4da6ff'))
+                    item.setForeground(2, QColor(BRAND_COLORS['fg_muted']))
             elif cue_type == CueType.LOOP.value:
-                item.setForeground(2, QColor('#4dff88'))
+                    item.setForeground(2, QColor(BRAND_COLORS['bg_light']))
             
             table.addTopLevelItem(item)
             row_index += 1

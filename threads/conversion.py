@@ -131,11 +131,14 @@ class ConversionThread(QThread):
                     self.logger.warning(f"Validation warnings: {validation['warnings']}")
                 if validation['errors']:
                     self.logger.error(f"Validation errors: {validation['errors']}")
+
+            validation_problems = validation.get('errors', []) + validation.get('warnings', [])
+            if (stats['errors'] > 0 or validation_problems or
+                    not validation.get('pdb_found') or not validation.get('deviceSQL_found')):
+                details = validation_problems or [f"Exporter errors: {stats['errors']}"]
+                raise RuntimeError(f"CDJ export validation failed: {'; '.join(details)}")
             
-            if stats['errors'] > 0:
-                self.logger.warning(f"Export completed with {stats['errors']} errors")
-            else:
-                self.logger.info("CDJ export completed successfully without errors")
+            self.logger.info("CDJ export completed successfully without errors")
             
         except Exception as e:
             self.logger.error(f"CDJ export failed: {e}", exc_info=True)
@@ -143,7 +146,7 @@ class ConversionThread(QThread):
     
     def _run_rekordbox_database_export(self):
         """Run Rekordbox DATABASE export (SQLite pour logiciel)."""
-        from exporter.bsm_rb_exporter import RekordboxDatabaseManager
+        from exporter.bsm_rb_exporter import RekordboxExportEngine, RekordboxVersion
         
         try:
             self.logger.info("Starting Rekordbox Database export (SQLite)")
@@ -160,14 +163,28 @@ class ConversionThread(QThread):
             self.logger.info(f"Rekordbox version: {rekordbox_version}")
             self.logger.info(f"Use encryption: {use_encryption}")
             
-            # Créer manager base de données
-            db_path = Path(self.output_path) / "rekordbox_database.pdb"
-            db_manager = RekordboxDatabaseManager(str(db_path), use_encryption)
-            
             self.progress_queue.put(("progress", (50, "Creating Rekordbox database...")))
-            
-            # Export (implémentation à adapter selon bsm_rb_exporter)
-            # db_manager.export_collection(all_tracks, structure_to_export)
+
+            version = RekordboxVersion.RB7 if str(rekordbox_version).upper() == 'RB7' else RekordboxVersion.RB6
+            exporter = RekordboxExportEngine(
+                rekordbox_version=version,
+                use_encryption=use_encryption,
+                progress_queue=self.progress_queue
+            )
+            result = exporter.export_collection_to_rekordbox(
+                tracks=all_tracks,
+                playlist_structure=structure_to_export,
+                output_dir=Path(self.output_path),
+                copy_audio=self.copy_music
+            )
+
+            stats = result.get('stats', {})
+            db_path = Path(self.output_path) / "PIONEER" / "rekordbox" / "export.pdb"
+            if (not stats.get('database_created') or stats.get('errors', 0) > 0 or
+                    not db_path.is_file()):
+                raise RuntimeError(
+                    f"Rekordbox database export failed: stats={stats}, path={db_path}"
+                )
             
             self.progress_queue.put(("progress", (100, f"Rekordbox database export saved to {db_path}")))
             
@@ -195,6 +212,12 @@ class ConversionThread(QThread):
             self.progress_queue.put(("progress", (50, "Generating XML structure...")))
             
             exporter.export_collection(all_tracks, structure_to_export, output_file)
+
+            if exporter.stats.get('errors', 0) > 0 or not output_file.is_file():
+                raise RuntimeError(
+                    f"XML export validation failed: errors={exporter.stats.get('errors', 0)}, "
+                    f"path={output_file}"
+                )
             
             self.progress_queue.put(("progress", (100, f"XML export saved to {output_file}")))
             

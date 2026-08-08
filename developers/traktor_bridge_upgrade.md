@@ -1,4 +1,4 @@
-# Traktor Bridge 2.0 - NML -> CDJ/XDJ Compatibility Guide
+# Traktor Bridge 2.1.0 - NML -> CDJ/XDJ Compatibility Guide
 
 ## Introduction
 
@@ -1209,18 +1209,18 @@ def validate_cdj_compatibility(usb_path: str, target_cdj: str) -> bool:
 
 ## Conclusion
 
-This upgrade transforms Traktor Bridge from a basic conversion tool into a professional-grade CDJ compatibility solution. The implementation provides:
+This upgrade extends Traktor Bridge with CDJ compatibility features. The implementation provides:
 
 - **Full encryption support** for modern CDJ models
 - **Complete ANLZ file generation** for waveforms and beat grids
 - **Advanced audio analysis** for tracks without existing metadata
 - **Target-specific optimization** for different CDJ/XDJ models
-- **Professional-grade validation** and error handling
+- **Validation** and error handling
 
 The modular architecture ensures maintainability while the progressive implementation approach allows for incremental deployment and testing.
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM. Original research attribution is retained above and in [NOTICE.md](../NOTICE.md).**

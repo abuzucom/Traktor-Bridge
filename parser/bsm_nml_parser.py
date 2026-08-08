@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Traktor NML Parser Module
-Professional-grade parser for Traktor Pro 3.x and 4.x NML files
+Parser for Traktor Pro 3.x and 4.x NML files
 
 Supports:
 - NML versions 19-20 (Traktor Pro 3.x/4.x)
@@ -106,6 +106,7 @@ class Track:
     # Performance data
     cue_points: List[Dict] = field(default_factory=list)
     grid_anchor_ms: Optional[float] = None
+    beat_grid: List[Dict] = field(default_factory=list)
     
     # System data
     audio_id: str = ""
@@ -222,7 +223,7 @@ def safe_int(value, default=0):
 
 class TraktorNMLParser:
     """
-    Professional Traktor NML Parser
+    Traktor NML Parser
     
     Features:
     - Supports Traktor Pro 3.x and 4.x (NML v19-20)
@@ -302,6 +303,16 @@ class TraktorNMLParser:
         """Parse NML with multiple encoding attempts and error recovery"""
         if not self.nml_path.exists():
             raise NMLParsingError(f"NML file not found: {self.nml_path}")
+
+        # NML files are data only; external entities are not part of the format.
+        marker = b'<!doctype'
+        carry = b''
+        with open(self.nml_path, 'rb') as source:
+            for chunk in iter(lambda: source.read(8192), b''):
+                window = carry + chunk.lower()
+                if marker in window:
+                    raise NMLParsingError("DOCTYPE declarations are not supported")
+                carry = window[-(len(marker) - 1):]
         
         # Try encoding detection first
         detected_encoding = self._detect_encoding(self.nml_path)
@@ -311,7 +322,14 @@ class TraktorNMLParser:
             try:
                 if LXML_AVAILABLE:
                     # Use lxml for better error recovery
-                    parser = lxml_et.XMLParser(recover=True, encoding=encoding)
+                    parser = lxml_et.XMLParser(
+                        recover=True,
+                        encoding=encoding,
+                        resolve_entities=False,
+                        load_dtd=False,
+                        no_network=True,
+                        huge_tree=False
+                    )
                     tree = lxml_et.parse(str(self.nml_path), parser)
                     # Convert to ElementTree for compatibility
                     xml_str = lxml_et.tostring(tree, encoding='unicode')
@@ -336,13 +354,13 @@ class TraktorNMLParser:
     
     def _detect_version(self) -> NMLVersion:
         """Detect NML version with feature analysis"""
-        version_attr = self.root.get('VERSION', '19')
+        version_attr = str(self.root.get('VERSION', '19')).strip().lower()
         
         # Check for T4 specific features
         program = self.root.find('HEAD')
         if program is not None:
-            program_name = program.get('PROGRAM', '')
-            if 'Pro 4' in program_name or 'Traktor Pro 4' in program_name:
+            program_name = program.get('PROGRAM', '').lower()
+            if 'traktor pro 4' in program_name or 'pro 4' in program_name:
                 return NMLVersion.V20
         
         # Feature detection
@@ -351,7 +369,8 @@ class TraktorNMLParser:
         has_flexible_grids = bool(self.root.find('.//GRID'))
         has_lock_time = bool(self.root.find('.//ENTRY[@LOCK_MODIFICATION_TIME]'))
         
-        if (version_attr == '20' or has_stems or has_smart_playlists or 
+        if (version_attr == '20' or version_attr == '19+' or version_attr.startswith('20') or
+            has_stems or has_smart_playlists or
             has_flexible_grids or has_lock_time):
             return NMLVersion.V20
         else:
@@ -421,7 +440,9 @@ class TraktorNMLParser:
         results = []
         
         # Handle both direct children and SUBNODES wrapper
-        children_container = node.find('SUBNODES') or node
+        children_container = node.find('SUBNODES')
+        if children_container is None or len(children_container) == 0:
+            children_container = node
         
         for child_node in children_container.findall('NODE'):
             node_type = child_node.get('TYPE')
@@ -429,7 +450,7 @@ class TraktorNMLParser:
             
             if node_type == 'PLAYLIST':
                 playlist = self._parse_playlist_node(child_node, node_name)
-                if playlist and playlist.tracks:
+                if playlist and (playlist.type == 'smartlist' or playlist.tracks):
                     results.append(playlist)
             
             elif node_type == 'SMARTLIST' and self.version == NMLVersion.V20:
@@ -453,13 +474,19 @@ class TraktorNMLParser:
         
         if playlist_elem is not None:
             playlist.uuid = playlist_elem.get('UUID', '')
+
+            if playlist_elem.get('TYPE', '').upper() == 'SEARCH' or playlist_elem.find('SEARCH') is not None:
+                playlist.type = 'smartlist'
+                search = playlist_elem.find('SEARCH')
+                if search is not None:
+                    playlist.search_expression = ET.tostring(search, encoding='unicode')
             
             for entry in playlist_elem.findall('ENTRY'):
                 track = self._parse_playlist_entry(entry)
                 if track:
                     playlist.tracks.append(track)
         
-        return playlist if playlist.tracks else None
+        return playlist if playlist.type == 'smartlist' or playlist.tracks else None
     
     def _parse_smartlist_node(self, node: ET.Element, name: str) -> Optional[Node]:
         """Parse T4 smart playlist node"""
@@ -473,6 +500,10 @@ class TraktorNMLParser:
         search_expr = smartlist_elem.find('SEARCH_EXPRESSION')
         if search_expr is not None:
             smartlist.search_expression = search_expr.get('QUERY', '')
+        else:
+            search = smartlist_elem.find('SEARCH')
+            if search is not None:
+                smartlist.search_expression = ET.tostring(search, encoding='unicode')
         
         return smartlist
     
@@ -537,6 +568,9 @@ class TraktorNMLParser:
         tempo = entry.find('TEMPO')
         if tempo is not None:
             track.bpm = safe_float(tempo.get('BPM', '0'))
+
+        # T4 may store flexible grid data outside TEMPO/CUE_V2.
+        self._parse_beat_grid(entry, track)
         
         # MUSICAL_KEY section with translation
         key_elem = entry.find('MUSICAL_KEY')
@@ -612,6 +646,11 @@ class TraktorNMLParser:
                     'len': safe_int(cue.get('LEN', '0')),
                     'hotcue': safe_int(cue.get('HOTCUE', '-1'))
                 }
+
+                if cue.get('BPM'):
+                    cue_point['bpm'] = safe_float(cue.get('BPM'))
+                    if cue_type == CueType.GRID.value and track.bpm <= 0:
+                        track.bpm = cue_point['bpm']
                 
                 # T4 color information
                 if self.version == NMLVersion.V20:
@@ -622,6 +661,32 @@ class TraktorNMLParser:
             except Exception as e:
                 self.logger.warning(f"Invalid cue point data: {e}")
                 continue
+
+    def _parse_beat_grid(self, entry: ET.Element, track: Track):
+        """Parse T4 flexible beat-grid markers without assuming their units."""
+        grid = entry.find('.//GRID')
+        if grid is not None and track.bpm <= 0:
+            track.bpm = safe_float(grid.get('BPM', '0'))
+
+        for anchor in entry.findall('.//BEATGRID_ANCHOR'):
+            bpm = safe_float(anchor.get('BPM', '0'))
+            if bpm > 0 and track.bpm <= 0:
+                track.bpm = bpm
+            track.beat_grid.append({
+                'bpm': bpm,
+                'beat_position': safe_float(anchor.get('BEAT_POS', '0')),
+                'type': 'anchor'
+            })
+
+        for marker in entry.findall('.//BEATGRID/MARKER'):
+            bpm = safe_float(marker.get('BPM', '0'))
+            if bpm > 0 and track.bpm <= 0:
+                track.bpm = bpm
+            track.beat_grid.append({
+                'bpm': bpm,
+                'beat_position': safe_float(marker.get('BEAT_POS', '0')),
+                'type': 'marker'
+            })
     
     def _parse_stem_data(self, entry: ET.Element, track: Track):
         """Parse T4 stems data"""
@@ -630,7 +695,7 @@ class TraktorNMLParser:
             return
         
         track.stem_data = {
-            'enabled': stems.get('ENABLED') == '1',
+            'enabled': stems.get('ENABLED', '1' if stems.findall('STEM') else '0') == '1',
             'file_path': stems.get('FILE', ''),
             'volume_gain': safe_float(stems.get('VOLUME_GAIN', '0'))
         }
@@ -639,11 +704,12 @@ class TraktorNMLParser:
         track.stem_data['channels'] = []
         for stem in stems.findall('STEM'):
             channel = {
-                'name': stem.get('NAME', ''),
+                'name': stem.get('NAME', stem.get('TYPE', '')),
                 'color': stem.get('COLOR', ''),
-                'volume': safe_float(stem.get('VOLUME', '1.0')),
-                'filter_on': stem.get('FILTER_ON') == '1',
-                'filter_value': safe_float(stem.get('FILTER_VALUE', '0'))
+                'volume': safe_float(stem.get('VOLUME', stem.get('LEVEL', '1.0'))),
+                'filter_on': stem.get('FILTER_ON', '0') == '1',
+                'filter_value': safe_float(stem.get('FILTER_VALUE', '0')),
+                'muted': stem.get('MUTED', '0') == '1'
             }
             track.stem_data['channels'].append(channel)
     

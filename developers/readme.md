@@ -1,16 +1,16 @@
-# Traktor Bridge 2.0 - Developers Documentation
+# Traktor Bridge 2.1.0 - Developers Documentation
 
-**Professional Traktor to Pioneer CDJ Hardware & Rekordbox Converter**
+**Traktor to Pioneer CDJ hardware and Rekordbox converter**
 
-Convert your Native Instruments Traktor playlists to Pioneer CDJ hardware and Rekordbox formats with complete metadata preservation including cue points, loops, BPM, musical keys, and artwork.
+Convert Native Instruments Traktor playlists to Pioneer CDJ hardware and Rekordbox formats while preserving supported metadata, including Traktor Pro 4 fields.
 
-**Website & User Guide**: www.traktorbridge.com
+**Repository & User Guide**: https://github.com/abuzucom/Traktor-Bridge
 
 ---
 
 ## 📚 Documentation Index
 
-This directory contains comprehensive documentation for Traktor Bridge 2.0:
+This directory contains the developer documentation for Traktor Bridge 2.1.0:
 
 - **[readme.md](readme.md)** - This file (user documentation)
 - **[architecture.md](architecture.md)** - Technical architecture and design patterns
@@ -27,16 +27,17 @@ This directory contains comprehensive documentation for Traktor Bridge 2.0:
 
 ## Introduction
 
-Traktor Bridge 2.0 is a professional-grade application that converts Native Instruments Traktor collections to Pioneer Rekordbox formats with complete metadata preservation. This document serves as the main entry point for developers working with Traktor Bridge.
+Traktor Bridge 2.1.0 converts Native Instruments Traktor collections to Pioneer CDJ, Rekordbox XML/database, and M3U formats. This document is the main entry point for developers working with the ABUZUCOM fork.
 
 ## Sources and Attribution
 
-### Author
-**Benoit (BSM) Saint-Moulin**
-* **Website**: www.benoitsaintmoulin.com
-* **Developer Portfolio**: www.bsm3d.com
-* **GitHub**: [github.com/bsm3d](https://github.com/bsm3d)
-* **Instagram**: [@benoitsaintmoulin](https://www.instagram.com/benoitsaintmoulin)
+### Fork Maintainer
+**ABUZUCOM**
+* **GitHub**: [github.com/abuzucom](https://github.com/abuzucom)
+
+### Original Upstream Project
+Traktor Bridge by Benoit (BSM) Saint-Moulin: https://github.com/bsm3d/Traktor-Bridge
+See [NOTICE.md](../NOTICE.md) for the upstream licensing status and attribution terms.
 
 ## Quick Start
 
@@ -44,11 +45,13 @@ Traktor Bridge 2.0 is a professional-grade application that converts Native Inst
 
 ```bash
 # Clone repository
-git clone https://github.com/bsm3d/Traktor-Bridge-2.git
-cd Traktor-Bridge-2
+git clone https://github.com/abuzucom/Traktor-Bridge.git
+cd Traktor-Bridge
 
-# Install dependencies
-pip install PySide6 pygame tinytag pillow mutagen
+# Create and activate a virtual environment, then install the pinned dependencies
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+python -m pip install -r requirements.lock
 
 # Run application
 python main.py
@@ -95,41 +98,40 @@ python main.py
 
 ---
 
-## Author
+## Fork Maintainer
 
-**Benoit (BSM) Saint-Moulin**  
-Website: [www.benoitsaintmoulin.com](http://www.benoitsaintmoulin.com)
+**ABUZUCOM**
+Repository: https://github.com/abuzucom/Traktor-Bridge
 
 ## Overview
 
-Traktor Bridge is a professional-grade application that converts Native Instruments Traktor collections (.nml files) to Pioneer Rekordbox format. Originally developed as a command-line tool (CLI) - a vestige from my Amiga CLI heritage - it has been refactored to include a modern graphical interface while preserving CLI usage for advanced users.
+Traktor Bridge converts Native Instruments Traktor collections (`.nml` files) to Pioneer CDJ, Rekordbox, and M3U formats through its graphical interface.
 
 **Design Philosophy**: The code is clean but not perfect; certain areas could be optimized. The monolithic code structure is intentional to facilitate usage by non-programmers who prefer a single-file solution.
 
-The application supports both database (.pdb) and XML export formats, making it compatible with Pioneer CDJ players and various DJ software that accept Rekordbox libraries.
+The application supports CDJ/USB, Rekordbox database, Rekordbox XML, and M3U exports, making it compatible with Pioneer CDJ players and DJ software that accepts Rekordbox libraries.
 
 ### Key Features
 
-- **Complete Metadata Preservation**: Artist, title, album, genre, BPM, musical key, comments, and artwork
+- **Supported Metadata Preservation**: Artist, title, album, genre, BPM, musical key, comments, artwork, and supported Traktor Pro 4 fields
 - **Cue Point Translation**: Hot cues, memory cues, loops, and beat grids
-- **Dual Export Formats**: Database (.pdb) for CDJs or XML for DJ software compatibility
+- **Multiple Export Formats**: CDJ/USB, Rekordbox database, Rekordbox XML, and M3U
 - **Smart File Management**: Automatic file location detection with music root folder support
 - **Audio Preview**: Built-in audio player for track verification
 - **Advanced Cue Timeline**: Visual cue point editor with filtering and export capabilities
 - **Batch Processing**: Convert multiple playlists and folder structures simultaneously
 - **Memory Optimized**: Efficient caching system for large collections
 - **Cross-Platform**: Works on Windows, macOS, and Linux
-- **CLI Support**: Original command-line interface preserved for batch operations
 
 ### Export Formats
 
-#### Database Format (.pdb)
-- Creates Pioneer-compatible SQLite database
+#### CDJ/USB Format
+- Creates Pioneer-compatible binary PDB and DeviceSQL data
 - Includes full folder structure: `PIONEER/`, `CONTENTS/`, `ARTWORK/`
 - Direct USB transfer to CDJ players
-- Preserves all metadata including artwork and cue points
+- Preserves supported metadata including artwork, cue points, and beat-grid data
 
-#### XML Format (.xml)
+#### Rekordbox XML Format (.xml)
 - Rekordbox XML format for software compatibility
 - Compatible with Serato, VirtualDJ, and other DJ software
 - Lightweight alternative to database format
@@ -163,38 +165,32 @@ The intuitive interface guides you through the conversion process:
 
 **Python 3.13 or higher** is required.
 
-### Required Dependencies
+### Dependencies
 
 ```bash
-pip install PySide6 pygame tinytag pillow
+python -m pip install -r requirements.lock
 ```
 
-### Optional Dependencies (Enhanced Features)
-
-```bash
-pip install mutagen
-```
-
-**Note**: `mutagen` provides enhanced metadata extraction capabilities for certain audio formats.
+The lockfile includes the direct and transitive dependencies used by the application. `lxml`, `chardet`, `librosa`, `aubio`, and `pysqlcipher3` enable enhanced or optional features; native packages may require platform build tools. The application falls back to the standard library XML parser and SQLite when optional packages are unavailable.
 
 ### Installation Steps
 
 1. **Clone the Repository or Download**
    ```bash
-   git clone https://github.com/yourusername/traktor-bridge.git
-   cd traktor-bridge
+    git clone https://github.com/abuzucom/Traktor-Bridge.git
+    cd Traktor-Bridge
    ```
    
-   Or simply download `Traktor_bridge.py` directly.
+    Or download the repository archive from GitHub.
 
 2. **Install Dependencies**
    ```bash
-   pip install PySide6 pygame tinytag pillow mutagen
+    python -m pip install -r requirements.lock
    ```
 
 3. **Run the Application**
    ```bash
-   python Traktor_bridge.py
+    python main.py
    ```
 
 ### Alternative Installation Methods
@@ -203,14 +199,14 @@ pip install mutagen
 ```bash
 python -m venv traktor_bridge_env
 source traktor_bridge_env/bin/activate  # On Windows: traktor_bridge_env\Scripts\activate
-pip install PySide6 pygame tinytag pillow mutagen
-python Traktor_bridge.py
+python -m pip install -r requirements.lock
+python main.py
 ```
 
-#### Command Line Usage (CLI Mode)
-For batch processing or automation, the original CLI interface is preserved:
+#### Application Entry Point
+The current application entry point is the GUI in `main.py`:
 ```bash
-python Traktor_bridge.py --help
+python main.py
 ```
 
 ## Usage Guide
@@ -219,7 +215,7 @@ python Traktor_bridge.py --help
 
 1. **Launch Traktor Bridge**
    ```bash
-   python Traktor_bridge.py
+    python main.py
    ```
 
 2. **Select Your Traktor NML File**
@@ -250,7 +246,7 @@ python Traktor_bridge.py --help
 
 #### Track Details and Playback
 - **View Details**: Select playlist and click "View Details"
-- **Audio Preview**: Click ▶ buttons or press P to play/pause
+- **Audio Preview**: Click Play buttons or press P to play/pause
 - **Sort Tracks**: Click column headers to sort by any criteria
 - **Search**: Use the search box to filter tracks
 
@@ -264,10 +260,10 @@ python Traktor_bridge.py --help
 - The converter maintains folder hierarchy in the output
 - Progress tracking shows individual file operations
 
-#### Command Line Interface
-The original CLI is preserved for automation:
+#### Application Entry Point
+The current application entry point is the GUI in `main.py`:
 ```bash
-python Traktor_bridge.py --nml collection.nml --output /path/to/usb --format database
+python main.py
 ```
 
 ### Keyboard Shortcuts
@@ -288,7 +284,7 @@ Traktor Bridge automatically saves your preferences:
 - Export format preference
 - File copying options
 
-Configuration is stored in `converter_config.json` in the application directory.
+Configuration is generated and stored in `converter_config.json` in the application directory. The file is intentionally ignored by Git; `converter_config.example.json` documents the available shape without containing machine-specific paths.
 
 ## Use Cases
 
@@ -334,7 +330,7 @@ Configuration is stored in `converter_config.json` in the application directory.
 **Benefits**: Cross-platform collaboration regardless of DJ software choice
 
 ### 5. Mobile DJ Services
-**Scenario**: Professional DJ with multiple venue setups
+**Scenario**: DJ with multiple venue setups
 
 **Process**:
 1. Maintain master collection in Traktor
@@ -396,7 +392,7 @@ The exported database follows Pioneer's official schema:
 **Cause**: Required Python packages not installed  
 **Solution**:
 ```bash
-pip install PySide6 pygame tinytag pillow mutagen
+python -m pip install -r requirements.lock
 ```
 
 #### Audio Preview Not Working
@@ -431,11 +427,11 @@ Contributions are welcome! Please read our contributing guidelines:
 ### Development Setup
 
 ```bash
-git clone https://github.com/yourusername/traktor-bridge.git
-cd traktor-bridge
+git clone https://github.com/abuzucom/Traktor-Bridge.git
+cd Traktor-Bridge
 python -m venv dev_env
 source dev_env/bin/activate  # On Windows: dev_env\Scripts\activate
-pip install PySide6 pygame tinytag pillow mutagen
+python -m pip install -r requirements.lock
 ```
 
 ### Code Style
@@ -446,45 +442,35 @@ pip install PySide6 pygame tinytag pillow mutagen
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See [LICENSE](../LICENSE) and
+[NOTICE.md](../NOTICE.md) for copyright and attribution information.
 
 ## Changelog
 
-### Version 1.1 (Current)
-- Enhanced PySide6 GUI with modern styling
-- Advanced cue point timeline visualization
-- Smart file caching system
-- XML export format support
-- Improved error handling and logging
-- Audio preview with playback controls
-- Memory-optimized processing for large collections
-- Preserved CLI interface for batch operations
+The release history is maintained in the repository root: [CHANGELOG.md](../CHANGELOG.md).
 
-### Version 1.0
-- Initial release
-- Basic NML to database conversion
-- Playlist structure preservation
-- Cue point translation
-- Command-line interface
+The current release is **2.1.0**, following [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/traktor-bridge/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/traktor-bridge/discussions)
-- **Email**: Contact via [www.benoitsaintmoulin.com](http://www.benoitsaintmoulin.com)
+- **Issues**: [GitHub Issues](https://github.com/abuzucom/Traktor-Bridge/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/abuzucom/Traktor-Bridge/discussions)
+- **Repository**: https://github.com/abuzucom/Traktor-Bridge
 
 ## Dependencies and Credits
 
 This application relies on excellent open-source libraries:
 
-### Required Dependencies
+### Dependencies
 - **[PySide6](https://pypi.org/project/PySide6/)** - Qt for Python GUI framework by The Qt Company
 - **[pygame](https://pypi.org/project/pygame/)** - Multimedia library for audio playback by Pete Shinners and pygame community  
 - **[tinytag](https://pypi.org/project/tinytag/)** - Audio metadata extraction library by Tom Wallroth (devsnd)
 - **[Pillow](https://pypi.org/project/Pillow/)** - Python Imaging Library fork by Jeffrey A. Clark (Alex) and contributors
 
-### Optional Dependencies
 - **[mutagen](https://pypi.org/project/mutagen/)** - Audio metadata handling library by Michael Urman, Lukáš Lalinský, and contributors
+- **[lxml](https://pypi.org/project/lxml/)** - Enhanced XML parsing
+- **[librosa](https://pypi.org/project/librosa/)** and **[aubio](https://pypi.org/project/aubio/)** - Optional audio analysis
+- **[pysqlcipher3](https://pypi.org/project/pysqlcipher3/)** - Optional SQLCipher support
 
 **Special thanks** to the Deep Symmetry community and all library maintainers who make tools like this possible.
 
@@ -506,6 +492,6 @@ For developers and advanced users, comprehensive technical documentation is avai
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM. Original upstream attribution is retained in [NOTICE.md](../NOTICE.md).**

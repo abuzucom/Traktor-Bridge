@@ -1,0 +1,21 @@
+.git/
+*.log
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+export/
+exports/
+converter_config.json
+old/*.zip
+
+# Ignore duplicate rule copies for other tools
+.cursorrules
+.clinerules
+.windsurfrules
+.copilot-instructions
+.github/copilot-instructions.md
+GEMINI.md
+CONVENTIONS.md

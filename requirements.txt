@@ -1,35 +1,36 @@
-# Traktor Bridge 2.0 - Python Dependencies
+# Traktor Bridge 2.1.0 - Python Dependencies
 #
-# Author: Benoit (BSM) Saint-Moulin
-# Date: November 2025
+# Maintainer: ABUZUCOM
+# Original upstream: Benoit (BSM) Saint-Moulin
+# Date: August 2026
 # Python: 3.13+
-# Developer: www.bsm3d.com
-# DJ/Artist: www.benoitsaintmoulin.com
-# Instagram: https://www.instagram.com/benoitsaintmoulin
+# GitHub: https://github.com/abuzucom/Traktor-Bridge
 
 # Core GUI Framework
-PySide6>=6.6.0
+PySide6==6.11.1
 
 # Audio Processing & Playback
-pygame>=2.5.0
-tinytag>=1.10.0
-mutagen>=1.47.0
+pygame==2.6.1
+tinytag==2.3.0
+mutagen==1.48.1
 
 # Image Processing
-Pillow>=10.0.0
+Pillow==12.3.0
 
 # Optional: XML Processing (enhanced parsing)
-lxml>=5.0.0
+lxml==6.1.1
 
 # Optional: Character Encoding Detection
-chardet>=5.2.0
+chardet==7.5.1
 
 # Optional: Audio Analysis (advanced features)
-librosa>=0.10.0
-numpy>=1.26.0
+librosa==0.11.0
+numpy==2.4.6
 
 # Optional: Beat Detection
-aubio>=0.4.9
+aubio==0.4.9
 
 # Optional: Database Encryption (Rekordbox 6+ support)
-pysqlcipher3>=1.2.0
+pysqlcipher3==1.2.0
+
+# Install requirements.lock for the fully hashed, transitive dependency set.

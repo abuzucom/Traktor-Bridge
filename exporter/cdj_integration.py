@@ -282,6 +282,8 @@ class CDJExportEngine:
                     self.export_stats['errors'] += 1
                     skipped_count += 1
             else:
+                self.logger.warning(f"Audio source missing: {getattr(track, 'file_path', '')}")
+                self.export_stats['errors'] += 1
                 skipped_count += 1
 
         # Statistiques

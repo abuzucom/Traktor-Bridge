@@ -4,6 +4,7 @@ Displays conversion logs and application messages
 """
 
 from datetime import datetime
+from html import escape
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QFrame, QApplication
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeyEvent
@@ -25,12 +26,13 @@ class LogDialog(QDialog):
             QDialog {{
                 background-color: {app_config.COLORS['bg_dark']};
                 color: {app_config.COLORS['fg_light']};
+                font-family: '{app_config.FONTS['editorial']}';
             }}
             QTextEdit {{
                 background-color: {app_config.COLORS['bg_med']};
                 color: {app_config.COLORS['fg_light']};
                 border: none;
-                font-family: 'Consolas', 'Monaco', monospace;
+                font-family: '{app_config.FONTS['utility']}';
                 font-size: 9pt;
                 line-height: 1.2;
             }}
@@ -40,6 +42,7 @@ class LogDialog(QDialog):
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
+                font-family: '{app_config.FONTS['utility']}';
             }}
             QPushButton:hover {{
                 background-color: {app_config.COLORS['bg_light']};
@@ -99,15 +102,16 @@ class LogDialog(QDialog):
         
         # Format message with level coloring
         level_colors = {
-            'DEBUG': '#adb5bd',
-            'INFO': '#f8f9fa',
-            'WARNING': '#ffc107',
-            'ERROR': '#dc3545',
-            'CRITICAL': '#dc3545'
+            'DEBUG': self.app_config.COLORS['fg_muted'],
+            'INFO': self.app_config.COLORS['fg_light'],
+            'WARNING': self.app_config.COLORS['fg_muted'],
+            'ERROR': self.app_config.COLORS['fg_light'],
+            'CRITICAL': self.app_config.COLORS['fg_light']
         }
         
-        color = level_colors.get(level.upper(), '#f8f9fa')
-        formatted_message = f'<span style="color: {color};">[{timestamp}] {level}: {message}</span>'
+        color = level_colors.get(level.upper(), self.app_config.COLORS['fg_light'])
+        safe_message = escape(str(message), quote=True)
+        formatted_message = f'<span style="color: {color};">[{timestamp}] {level}: {safe_message}</span>'
         
         self.log_text.append(formatted_message)
         
