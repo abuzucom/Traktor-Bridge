@@ -1,17 +1,14 @@
-# Traktor Bridge 2.0 - Technical Architecture
+# Traktor Bridge 2.1.0 - Technical Architecture
 
 ## Introduction
 
-This document provides a comprehensive technical overview of Traktor Bridge 2.0's architecture, design patterns, and system components. It covers the modular structure, data flow, threading model, and performance optimizations that enable professional-grade DJ library conversion.
+This document provides a technical overview of Traktor Bridge 2.1.0's architecture, design patterns, and system components.
 
 ## Sources and Attribution
 
 ### Author
-**Benoit (BSM) Saint-Moulin**
-* **Website**: www.benoitsaintmoulin.com
-* **Developer Portfolio**: www.bsm3d.com
-* **GitHub**: [github.com/bsm3d](https://github.com/bsm3d)
-* **Instagram**: [@benoitsaintmoulin](https://www.instagram.com/benoitsaintmoulin)
+**ABUZUCOM**
+* **GitHub**: [github.com/abuzucom](https://github.com/abuzucom)
 
 ## Table of Contents
 
@@ -30,7 +27,7 @@ This document provides a comprehensive technical overview of Traktor Bridge 2.0'
 
 ## Overview
 
-Traktor Bridge 2.0 is a professional-grade DJ software converter built with a modular architecture that supports multiple export formats. The application follows modern software engineering principles with clear separation of concerns, thread-safe operations, and comprehensive error handling.
+Traktor Bridge 2.1.0 is a DJ software converter built with a modular architecture that supports multiple export formats. The application follows modern software engineering principles with clear separation of concerns, thread-safe operations, and comprehensive error handling.
 
 ### Key Architectural Goals
 
@@ -108,7 +105,7 @@ Traktor Bridge 2.0 is a professional-grade DJ software converter built with a mo
 ### Directory Structure
 
 ```
-Traktor-Bridge-2/
+Traktor-Bridge/
 ├── main.py                  # Application entry point
 ├── exporter/                # Export engine modules
 │   ├── cdj_integration.py   # CDJ export orchestrator
@@ -133,7 +130,8 @@ Traktor-Bridge-2/
 │   ├── options.py           # Settings dialog
 │   ├── log.py               # Logging dialog
 │   ├── timeline.py          # Cue point timeline
-│   └── usage.py             # Usage guide
+│   ├── usage.py             # Usage guide
+│   └── brand.py             # ABUZUCOM visual identity tokens
 ├── threads/                 # Background processing
     └── conversion.py        # Conversion worker thread
 ```
@@ -171,7 +169,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
 ```python
 class AppConfig:
     """Application configuration and constants."""
-    VERSION = "2.0"
+    VERSION = __version__  # Canonical value is maintained in version.py
     WINDOW_SIZE = (700, 650)
     COLORS = {...}  # Dark theme colors
 ```
@@ -180,12 +178,12 @@ class AppConfig:
 
 ### 2. Parser Layer (parser/)
 
-**TraktorNMLParser** - Professional NML parser
+**TraktorNMLParser** - NML parser
 
 ```python
 class TraktorNMLParser:
     """
-    Professional Traktor collection parser.
+    Traktor collection parser.
 
     Features:
     - Auto encoding detection (UTF-8, ISO-8859-1, CP1252)
@@ -887,6 +885,6 @@ QMessageBox.critical(
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM**

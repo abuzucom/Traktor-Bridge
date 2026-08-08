@@ -5,6 +5,7 @@ Includes proper Rekordbox key ID mapping for PDB export
 """
 
 from typing import Dict, Optional, Tuple, List
+from ui.brand import BRAND_COLORS
 
 
 class KeyTranslator:
@@ -217,44 +218,7 @@ class KeyTranslator:
         if not key_notation:
             return None
             
-        # Open Key color mapping (Camelot wheel colors)
-        if format_type == "Open Key":
-            # Color wheel based on Camelot system
-            camelot_colors = {
-                '1A': '#FF0000', '1B': '#FF4444',  # Red
-                '2A': '#FF8000', '2B': '#FF9944',  # Orange
-                '3A': '#FFFF00', '3B': '#FFFF44',  # Yellow
-                '4A': '#80FF00', '4B': '#99FF44',  # Yellow-Green
-                '5A': '#00FF00', '5B': '#44FF44',  # Green
-                '6A': '#00FF80', '6B': '#44FF99',  # Green-Cyan
-                '7A': '#00FFFF', '7B': '#44FFFF',  # Cyan
-                '8A': '#0080FF', '8B': '#4499FF',  # Cyan-Blue
-                '9A': '#0000FF', '9B': '#4444FF',  # Blue
-                '10A': '#8000FF', '10B': '#9944FF', # Blue-Purple
-                '11A': '#FF00FF', '11B': '#FF44FF', # Magenta
-                '12A': '#FF0080', '12B': '#FF4499'  # Red-Magenta
-            }
-            return camelot_colors.get(key_notation)
-        
-        # Classical color mapping
-        elif format_type == "Classical":
-            classical_colors = {
-                # Major keys - brighter colors
-                'C': '#FF4444', 'G': '#44FF44', 'D': '#4444FF', 'A': '#FFFF44',
-                'E': '#FF44FF', 'B': '#44FFFF', 'F#': '#FF8844', 'Gb': '#FF8844',
-                'C#': '#88FF44', 'Db': '#88FF44', 'G#': '#4488FF', 'Ab': '#4488FF',
-                'D#': '#FF4488', 'Eb': '#FF4488', 'A#': '#FFAA44', 'Bb': '#FFAA44',
-                'F': '#AA44FF',
-                
-                # Minor keys - darker variants
-                'Am': '#CC2222', 'Em': '#CC22CC', 'Bm': '#22CCCC', 'F#m': '#CC6622',
-                'Gbm': '#CC6622', 'C#m': '#66CC22', 'Dbm': '#66CC22', 'G#m': '#2266CC',
-                'Abm': '#2266CC', 'D#m': '#CC2266', 'Ebm': '#CC2266', 'Bbm': '#CC8822',
-                'Fm': '#8822CC', 'Cm': '#2222CC', 'Gm': '#22CC22', 'Dm': '#CC2222'
-            }
-            return classical_colors.get(key_notation)
-        
-        return None
+        return BRAND_COLORS['fg_light']
     
     def get_supported_formats(self) -> List[str]:
         """Get list of supported key formats."""

@@ -1,4 +1,4 @@
-# Traktor Bridge 2.0 - Rekordbox XML Format Technical Specification
+# Traktor Bridge 2.1.0 - Rekordbox XML Format Technical Specification
 
 ## Introduction
 
@@ -539,6 +539,6 @@ Understanding the hierarchical structure, attribute semantics, and encoding requ
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM. Original upstream attribution is retained in [NOTICE.md](../NOTICE.md).**

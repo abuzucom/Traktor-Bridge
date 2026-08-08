@@ -24,12 +24,14 @@ class UsageDialog(QDialog):
             QDialog {{
                 background-color: {app_config.COLORS['bg_dark']};
                 color: {app_config.COLORS['fg_light']};
+                font-family: '{app_config.FONTS['editorial']}';
             }}
             QTextEdit {{
                 background-color: {app_config.COLORS['bg_med']};
                 color: {app_config.COLORS['fg_light']};
                 border: none;
                 font-size: 10pt;
+                font-family: '{app_config.FONTS['editorial']}';
             }}
             QPushButton {{
                 background-color: {app_config.COLORS['bg_med']};
@@ -37,6 +39,7 @@ class UsageDialog(QDialog):
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
+                font-family: '{app_config.FONTS['utility']}';
             }}
             QPushButton:hover {{
                 background-color: {app_config.COLORS['bg_light']};
@@ -52,7 +55,7 @@ class UsageDialog(QDialog):
         
         # Title
         title = QLabel("USAGE GUIDE")
-        title.setStyleSheet("font-size: 18pt; font-weight: bold;")
+        title.setStyleSheet(f"font-family: '{self.app_config.FONTS['display']}'; font-size: 18pt; font-weight: 900;")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         # Content
@@ -64,13 +67,13 @@ class UsageDialog(QDialog):
             h3 {{ color: {self.app_config.COLORS['accent']}; margin-top: 20px; }}
             table {{ border-collapse: collapse; width: 100%; margin: 10px 0; }}
             th, td {{ border: 1px solid {self.app_config.COLORS['bg_light']}; padding: 8px; text-align: left; }}
-            th {{ background-color: {self.app_config.COLORS['bg_light']}; font-weight: bold; }}
+            th {{ background-color: {self.app_config.COLORS['bg_light']}; font-weight: 700; font-family: '{self.app_config.FONTS['utility']}'; }}
             kbd {{ 
                 background-color: {self.app_config.COLORS['bg_light']}; 
                 color: {self.app_config.COLORS['fg_light']};
                 padding: 2px 6px; 
                 border-radius: 3px; 
-                font-family: monospace;
+                font-family: '{self.app_config.FONTS['utility']}';
                 font-size: 9pt;
             }}
             ul, ol {{ margin: 10px 0; padding-left: 20px; }}
@@ -106,7 +109,7 @@ class UsageDialog(QDialog):
             <tr><td><kbd>P</kbd></td><td>Play/Pause Selected Track</td></tr>
             <tr><td><kbd>Ctrl+F</kbd></td><td>Focus Search Field</td></tr>
             <tr><td><kbd>Double-click Cues</kbd></td><td>Open Cue Timeline</td></tr>
-            <tr><td><kbd>Click ▶</kbd></td><td>Play/Pause Track</td></tr>
+            <tr><td><kbd>Click Play</kbd></td><td>Play/Pause Track</td></tr>
         </table>
 
         <h3>Export Formats:</h3>

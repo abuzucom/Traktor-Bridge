@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 from PySide6.QtCore import QThread, Signal, QTimer
 from PySide6.QtWidgets import QMessageBox
+from ui.brand import BRAND_COLORS
 
 
 class LoadingThread(QThread):
@@ -301,7 +302,7 @@ class LoadingSystemMixin:
         layout.setContentsMargins(0, 0, 0, 0)
         
         label = QLabel("1. Traktor NML File *")
-        label.setStyleSheet("color: #00b4d8; font-weight: bold;")
+        label.setStyleSheet(f"color: {BRAND_COLORS['accent']}; font-weight: 500;")
         layout.addWidget(label)
         
         input_frame = QFrame()

@@ -1,0 +1,29 @@
+name: Convention Sync Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Run sync check
+        run: python scripts/sync.py --check
+      - name: Run style lint
+        run: python scripts/lint_style.py
+      - name: Check American spelling
+        run: python scripts/check_us_spelling.py AGENTS.md
+      - name: Check English only
+        run: python scripts/check_english_only.py AGENTS.md

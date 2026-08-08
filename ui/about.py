@@ -24,6 +24,7 @@ class AboutDialog(QDialog):
             QDialog {{
                 background-color: {app_config.COLORS['bg_dark']};
                 color: {app_config.COLORS['fg_light']};
+                font-family: '{app_config.FONTS['editorial']}';
             }}
             QLabel {{
                 color: {app_config.COLORS['fg_light']};
@@ -34,6 +35,7 @@ class AboutDialog(QDialog):
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
+                font-family: '{app_config.FONTS['utility']}';
             }}
             QPushButton:hover {{
                 background-color: {app_config.COLORS['bg_light']};
@@ -50,7 +52,7 @@ class AboutDialog(QDialog):
         
         # Application name
         app_name = QLabel(self.app_config.APP_NAME)
-        app_name.setStyleSheet("font-size: 20pt; font-weight: bold;")
+        app_name.setStyleSheet(f"font-family: '{self.app_config.FONTS['display']}'; font-size: 20pt; font-weight: 900;")
         app_name.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         # Version
@@ -59,7 +61,7 @@ class AboutDialog(QDialog):
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         # Description
-        description = QLabel("Professional Traktor to Pioneer CDJ/XML Converter")
+        description = QLabel("Traktor to Pioneer CDJ and Rekordbox converter")
         description.setWordWrap(True)
         description.setAlignment(Qt.AlignmentFlag.AlignCenter)
         description.setStyleSheet(f"color: {self.app_config.COLORS['fg_muted']}; font-size: 11pt;")
@@ -70,13 +72,13 @@ class AboutDialog(QDialog):
         author.setStyleSheet("font-size: 11pt;")
         
         # Website link
-        website = QLabel(f'<a href="https://{self.app_config.WEBSITE}" style="color: {self.app_config.COLORS["accent"]}; text-decoration: none;">{self.app_config.WEBSITE}</a>')
+        website = QLabel(f'<a href="{self.app_config.WEBSITE}" style="color: {self.app_config.COLORS["accent"]}; text-decoration: none;">{self.app_config.WEBSITE}</a>')
         website.setAlignment(Qt.AlignmentFlag.AlignCenter)
         website.setOpenExternalLinks(True)
         website.setStyleSheet("font-size: 11pt;")
         
         # License information
-        license_text = QLabel("Open Source Project - Free for educational and personal use")
+        license_text = QLabel("MIT License; see LICENSE and NOTICE.md")
         license_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
         license_text.setStyleSheet(f"color: {self.app_config.COLORS['fg_muted']}; font-size: 9pt;")
         license_text.setWordWrap(True)

@@ -8,6 +8,7 @@ from typing import Dict, List, Optional
 from PySide6.QtWidgets import *
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QKeyEvent, QBrush, QFont
+from ui.brand import BRAND_COLORS, BRAND_FONTS
 
 
 class DetailWindow(QDialog):
@@ -25,13 +26,39 @@ class DetailWindow(QDialog):
         self.resize(1200, 600)
         self.setModal(False)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setStyleSheet(f"""
+            QDialog {{
+                background-color: {BRAND_COLORS['bg_dark']};
+                color: {BRAND_COLORS['fg_light']};
+                font-family: '{BRAND_FONTS['editorial']}';
+            }}
+            QLineEdit, QPushButton, QComboBox, QTableWidget {{
+                font-family: '{BRAND_FONTS['utility']}';
+            }}
+            QLineEdit, QPushButton, QComboBox, QTreeWidget {{
+                background-color: {BRAND_COLORS['bg_med']};
+                color: {BRAND_COLORS['fg_light']};
+                border: none;
+                padding: 6px;
+            }}
+            QTreeWidget {{
+                alternate-background-color: {BRAND_COLORS['bg_dark']};
+            }}
+            QHeaderView::section {{
+                background-color: {BRAND_COLORS['bg_dark']};
+                color: {BRAND_COLORS['fg_light']};
+                padding: 5px;
+                border: none;
+                font-family: '{BRAND_FONTS['utility']}';
+            }}
+        """)
         
         # Track lookup for performance
         self.tracks_by_id = {id(track): track for track in playlist.tracks}
         
         # Play/pause icons
-        self.play_icon = "▶"
-        self.pause_icon = "⏸"
+        self.play_icon = "Play"
+        self.pause_icon = "Pause"
         
         self._setup_ui()
         self._populate_table()
@@ -48,10 +75,10 @@ class DetailWindow(QDialog):
         
         # Playlist info
         playlist_label = QLabel(f"{self.playlist.name}")
-        playlist_label.setStyleSheet("font-size: 16pt; font-weight: bold;")
+        playlist_label.setStyleSheet(f"font-family: '{BRAND_FONTS['display']}'; font-size: 16pt; font-weight: 900;")
         
         tracks_label = QLabel(f"{len(self.playlist.tracks)} tracks")
-        tracks_label.setStyleSheet("color: #adb5bd;")
+        tracks_label.setStyleSheet(f"color: {BRAND_COLORS['fg_muted']};")
         
         # Search
         search_label = QLabel("Search:")
@@ -80,7 +107,7 @@ class DetailWindow(QDialog):
         layout.addWidget(header_frame)
         
         # Instructions
-        info_label = QLabel("Shortcuts: P = Play/Pause | Click ▶ to play | Double-click Cues to open timeline")
+        info_label = QLabel("Shortcuts: P = Play/Pause | Click Play to start | Double-click Cues to open timeline")
         layout.addWidget(info_label)
         
         # Tracks table
@@ -89,12 +116,12 @@ class DetailWindow(QDialog):
         self.tracks_table.setSelectionMode(QTreeWidget.SelectionMode.SingleSelection)
         self.tracks_table.setRootIsDecorated(False)
         
-        columns = ['▶', '#', 'Artist', 'Title', 'Key', 'BPM', 'Gain', 'Grid', 'Duration', 'Cues', 'Album']
+        columns = ['Play', '#', 'Artist', 'Title', 'Key', 'BPM', 'Gain', 'Grid', 'Duration', 'Cues', 'Album']
         self.tracks_table.setColumnCount(len(columns))
         self.tracks_table.setHeaderLabels(columns)
         
         # Column widths
-        widths = {'▶': 30, '#': 40, 'Artist': 200, 'Title': 280, 'Key': 60, 
+        widths = {'Play': 45, '#': 40, 'Artist': 200, 'Title': 280, 'Key': 60,
                  'BPM': 60, 'Gain': 60, 'Grid': 40, 'Duration': 70, 'Cues': 100, 'Album': 220}
         
         for i, col in enumerate(columns):

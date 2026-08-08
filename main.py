@@ -1,27 +1,26 @@
 """
 ================================================================================
-TRAKTOR BRIDGE - Professional Traktor to Pioneer CDJ/XML/M3U Converter
+TRAKTOR BRIDGE - Traktor to Pioneer CDJ/XML/M3U Converter
 ================================================================================
 
-Version: 2.1
-Author: Benoit (BSM) Saint-Moulin
-Website: www.benoitsaintmoulin.com
-GitHub: https://github.com/bsm3d/Traktor-Bridge
+Version: 2.1.0
+Author: ABUZUCOM
+GitHub: https://github.com/abuzucom/Traktor-Bridge
+Original upstream: Benoit (BSM) Saint-Moulin - https://github.com/bsm3d/Traktor-Bridge
 
 ================================================================================
 LICENSE & USAGE
 ================================================================================
 
-**Open Source Project** - Free for educational and personal use
+This fork is distributed under the MIT License. See LICENSE and NOTICE.md for
+copyright and attribution information.
 
 **Authorized**: 
-- Educational use within academic framework
-- Personal modification and use
-- Citation with appropriate author attribution
+- Use, copy, modify, merge, publish, distribute, sublicense, and sell copies
+- Retention of the original copyright and permission notice
 
 **Restricted**: 
-- Commercial use requires prior authorization from the author
-- Redistribution must maintain original copyright notice
+- None beyond the MIT License terms
 
 **Contact**: GitHub repository for authorization requests
 
@@ -38,7 +37,7 @@ from typing import Dict, List, Optional, Any
 
 from PySide6.QtWidgets import *
 from PySide6.QtCore import Qt, QTimer, Signal
-from PySide6.QtGui import QAction, QKeySequence, QShortcut
+from PySide6.QtGui import QAction, QKeySequence, QShortcut, QFont
 
 # Import modular components
 from threads.conversion import ConversionThread
@@ -55,31 +54,26 @@ from ui.log import LogDialog, LogHandler
 from ui.timeline import TimelineDialog
 from ui.usage import UsageDialog
 from ui.options import OptionsDialog
+from ui.brand import BRAND_COLORS, BRAND_FONTS
+from version import __version__
 
 # Import / Export 
 from parser.bsm_nml_parser import TraktorNMLParser, Track, Node, create_traktor_parser
 
 class AppConfig:
     """Application configuration and constants."""
-    VERSION = "2.0"
+    VERSION = __version__
     APP_NAME = "Traktor Bridge"
-    AUTHOR = "Benoit (BSM) Saint-Moulin"
-    WEBSITE = "www.benoitsaintmoulin.com"
+    AUTHOR = "ABUZUCOM"
+    WEBSITE = "https://github.com/abuzucom/Traktor-Bridge"
     
     # UI Configuration
     WINDOW_SIZE = (700, 650)
     MIN_SIZE = (700, 650)
     
     # Colors for styling
-    COLORS = {
-        'bg_dark': '#212529',
-        'bg_med': '#343a40', 
-        'bg_light': '#495057',
-        'fg_light': '#f8f9fa',
-        'fg_muted': '#adb5bd',
-        'accent': '#00b4d8',
-        'hover': '#0096c7'
-    }
+    COLORS = BRAND_COLORS
+    FONTS = BRAND_FONTS
 
 
 class ConverterGUI(QMainWindow, LoadingSystemMixin):
@@ -170,6 +164,8 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
             QMainWindow, QWidget {{
                 background-color: {self.app_config.COLORS['bg_dark']};
                 color: {self.app_config.COLORS['fg_light']};
+                font-family: '{self.app_config.FONTS['editorial']}';
+                font-weight: 400;
             }}
             QLabel {{ 
                 color: {self.app_config.COLORS['fg_light']}; 
@@ -180,6 +176,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
+                font-family: '{self.app_config.FONTS['utility']}';
             }}
             QPushButton:hover {{ 
                 background-color: {self.app_config.COLORS['bg_light']}; 
@@ -190,6 +187,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
                 border: none;
                 padding: 6px;
                 border-radius: 4px;
+                font-family: '{self.app_config.FONTS['utility']}';
             }}
             QComboBox {{
                 background-color: {self.app_config.COLORS['bg_med']};
@@ -197,6 +195,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
                 border: none;
                 padding: 6px;
                 border-radius: 4px;
+                font-family: '{self.app_config.FONTS['utility']}';
             }}
             QComboBox QAbstractItemView {{
                 background-color: {self.app_config.COLORS['bg_med']};
@@ -218,6 +217,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
                 color: {self.app_config.COLORS['fg_light']};
                 border: none;
                 alternate-background-color: {self.app_config.COLORS['bg_light']};
+                font-family: '{self.app_config.FONTS['utility']}';
             }}
             QHeaderView::section {{
                 background-color: {self.app_config.COLORS['bg_dark']};
@@ -235,13 +235,14 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
             }}
             QMenu::item:selected {{
                 background-color: {self.app_config.COLORS['accent']};
+                color: {self.app_config.COLORS['fg_dark']};
             }}
         """)
         
         # Title section (ORIGINAL)
         title_label = QLabel("Traktor Bridge")
-        title_label.setStyleSheet("font-size: 18pt; font-weight: bold;")
-        subtitle_label = QLabel("Professional Traktor to Pioneer CDJ/XML/M3U Converter")
+        title_label.setStyleSheet(f"font-family: '{self.app_config.FONTS['display']}'; font-size: 18pt; font-weight: 900;")
+        subtitle_label = QLabel("Traktor to Pioneer CDJ/XML/M3U Converter")
         subtitle_label.setStyleSheet(f"color: {self.app_config.COLORS['fg_muted']};")
         
         main_layout.addWidget(title_label)
@@ -282,7 +283,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
         layout.setContentsMargins(0, 0, 0, 0)
         
         label = QLabel("1. Traktor NML File")
-        label.setStyleSheet("color: #00b4d8; font-weight: bold;")
+        label.setStyleSheet(f"color: {self.app_config.COLORS['accent']}; font-weight: 500;")
         layout.addWidget(label)
         
         input_frame = QFrame()
@@ -358,7 +359,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
         layout.setContentsMargins(0, 0, 0, 0)
         
         label = QLabel("2. Music Root Folder (Optional)")
-        label.setStyleSheet("color: #00b4d8; font-weight: bold;")
+        label.setStyleSheet(f"color: {self.app_config.COLORS['accent']}; font-weight: 500;")
         layout.addWidget(label)
         
         input_frame = QFrame()
@@ -384,7 +385,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
         layout.setContentsMargins(0, 0, 0, 0)
         
         label = QLabel("2b. Output Directory (Optional)")
-        label.setStyleSheet("color: #00b4d8; font-weight: bold;")
+        label.setStyleSheet(f"color: {self.app_config.COLORS['accent']}; font-weight: 500;")
         layout.addWidget(label)
         
         input_frame = QFrame()
@@ -415,7 +416,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
         header_layout.setContentsMargins(0, 0, 0, 0)
         
         playlist_title = QLabel("3. Select Playlists")
-        playlist_title.setStyleSheet("color: #00b4d8; font-weight: bold;")
+        playlist_title.setStyleSheet(f"color: {self.app_config.COLORS['accent']}; font-weight: 500;")
         
         self.playlist_info = QLabel("Load a collection first...")
         self.playlist_info.setStyleSheet(f"color: {self.app_config.COLORS['fg_muted']};")
@@ -591,11 +592,12 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
         self.convert_button.setStyleSheet(f"""
             QPushButton {{
                 background-color: {self.app_config.COLORS['accent']};
-                color: {self.app_config.COLORS['fg_light']};
-                font-weight: bold;
+                color: {self.app_config.COLORS['fg_dark']};
+                font-weight: 700;
                 font-size: 11pt;
                 padding: 12px;
                 border-radius: 6px;
+                font-family: '{self.app_config.FONTS['utility']}';
             }}
             QPushButton:hover {{
                 background-color: {self.app_config.COLORS['hover']};
@@ -793,7 +795,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
             if hasattr(node, 'type'):
                 if node.type == 'folder':
                     folder_item = QTreeWidgetItem()
-                    folder_item.setText(0, f"📁 {node.name}")
+                    folder_item.setText(0, node.name)
                     folder_item.setText(1, "")
                     folder_item.setText(2, "Folder")
                     folder_item.setData(0, Qt.ItemDataRole.UserRole, node)
@@ -811,8 +813,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
                     
                 elif node.type in ['playlist', 'smartlist']:
                     playlist_item = QTreeWidgetItem()
-                    icon = "🎵" if node.type == 'playlist' else "🔍"
-                    playlist_item.setText(0, f"{icon} {node.name}")
+                    playlist_item.setText(0, node.name)
                     
                     track_count = len(getattr(node, 'tracks', []))
                     playlist_item.setText(1, str(track_count))
@@ -1152,6 +1153,7 @@ def setup_logging():
 def main():
     """Main application entry point."""
     app = QApplication(sys.argv)
+    app.setFont(QFont(AppConfig.FONTS['editorial'], 10))
     app.setApplicationName(AppConfig.APP_NAME)
     app.setApplicationVersion(AppConfig.VERSION)
     app.setOrganizationName(AppConfig.AUTHOR)
@@ -1395,7 +1397,7 @@ if __name__ == "__main__":
             if hasattr(node, 'type'):
                 if node.type == 'folder':
                     folder_item = QTreeWidgetItem()
-                    folder_item.setText(0, f"📁 {node.name}")
+                    folder_item.setText(0, node.name)
                     folder_item.setText(1, "")
                     folder_item.setText(2, "Folder")
                     folder_item.setData(0, Qt.ItemDataRole.UserRole, node)
@@ -1413,8 +1415,7 @@ if __name__ == "__main__":
                     
                 elif node.type in ['playlist', 'smartlist']:
                     playlist_item = QTreeWidgetItem()
-                    icon = "🎵" if node.type == 'playlist' else "🔍"
-                    playlist_item.setText(0, f"{icon} {node.name}")
+                    playlist_item.setText(0, node.name)
                     
                     track_count = len(getattr(node, 'tracks', []))
                     playlist_item.setText(1, str(track_count))
@@ -1600,7 +1601,7 @@ if __name__ == "__main__":
     def _on_conversion_finished(self, status, message):
         """Handle conversion completion."""
         self.convert_button.setEnabled(True)
-        self.convert_button.setText("🚀 CONVERT")
+        self.convert_button.setText("CONVERT")
         self.cancel_button.setEnabled(False)
         
         if status == "completed":
@@ -1766,6 +1767,7 @@ def setup_logging():
 def main():
     """Main application entry point."""
     app = QApplication(sys.argv)
+    app.setFont(QFont(AppConfig.FONTS['editorial'], 10))
     app.setApplicationName(AppConfig.APP_NAME)
     app.setApplicationVersion(AppConfig.VERSION)
     app.setOrganizationName(AppConfig.AUTHOR)

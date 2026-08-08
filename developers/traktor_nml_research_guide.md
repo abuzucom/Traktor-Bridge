@@ -1,4 +1,4 @@
-# Traktor Bridge 2.0 - Native Instruments Traktor 3 & 4 NML File Format
+# Traktor Bridge 2.1.0 - Native Instruments Traktor 3 & 4 NML File Format
 
 ## Introduction
 
@@ -41,7 +41,7 @@ This specification is based on:
 2. **Empirical Analysis**: Extensive reverse engineering of the NML format through testing and validation
 3. **Community Knowledge**: Integration of community findings and documentation gaps
 4. **Cross-Platform Testing**: Validation across different Traktor versions and operating systems
-5. **Real-World Implementation**: Testing with professional DJ libraries and edge cases
+5. **Real-World Implementation**: Testing with DJ libraries and edge cases
 
 ### Important Legal and Technical Disclaimers
 
@@ -90,7 +90,7 @@ This specification covers robust parsing requirements for production systems tar
 
 ### Primary NML File Types
 
-**collection.nml**: Main library file located at `$TRAKTOR_DIR/collection.nml`. Contains complete musical collection data. Size ranges from 5KB (empty library) to 660MB+ for professional collections with tens of thousands of tracks.
+**collection.nml**: Main library file located at `$TRAKTOR_DIR/collection.nml`. Contains musical collection data. Size ranges from 5KB for an empty library to 660MB+ for collections with tens of thousands of tracks.
 
 **history_YYYY-MM-DD_HH-MM-SS.nml**: Session history files stored in the History subfolder. Capture exact track sequences, transitions, and manipulations with precise timestamps for session replay.
 
@@ -623,7 +623,7 @@ File paths adapt automatically to OS separators while VOLUME and VOLUMEID enable
 
 ### Memory Management
 
-Large collections (10,000+ tracks) may require streaming parsing approaches to avoid memory limitations. Consider chunk-based processing for professional-scale libraries.
+Large collections with 10,000 or more tracks may require streaming parsing approaches to avoid memory limitations. Consider chunk-based processing for large libraries.
 
 ## Parser Implementation
 
@@ -894,19 +894,19 @@ T4 format remains **backward compatible** - T3 collections open in T4 with autom
 
 ## Conclusion
 
-The NML format represents a sophisticated balance between flexibility and stability in professional DJ software ecosystems. Its readable XML structure and exceptional backward compatibility make it a de facto standard for interoperability between DJ software solutions.
+The NML format balances flexibility and stability in DJ software ecosystems. Its readable XML structure and backward compatibility make it useful for interoperability between DJ software solutions.
 
-Traktor Pro 4's evolution introduces advanced features like flexible beat grids and stem separation while maintaining compatibility with previous versions. This progressive approach allows professional DJs to migrate their libraries without losing critical data.
+Traktor Pro 4 introduces advanced features such as flexible beat grids and stem separation while maintaining compatibility with previous versions. This allows DJs to migrate their libraries without losing critical data.
 
-The Python ecosystem, particularly traktor-nml-utils, offers automation and analysis possibilities far beyond Traktor's native capabilities. These tools enable custom workflows, advanced statistical analysis of collections, and conversion to other professional DJ formats.
+The Python ecosystem, particularly traktor-nml-utils, offers automation and analysis possibilities beyond Traktor's native capabilities. These tools enable custom workflows, collection analysis, and conversion to other DJ formats.
 
-For developers and technical DJs, the NML format provides a solid foundation for creating customized solutions for analysis, management, and conversion of professional music libraries. The combination of its open structure and mature community tools makes it an optimal choice for projects requiring programmatic manipulation of DJ data.
+For developers and technical DJs, the NML format provides a foundation for analysis, management, and conversion of music libraries. Its open structure and mature community tools support projects requiring programmatic manipulation of DJ data.
 
 This specification enables robust NML parsing for production DJ software with comprehensive error handling and version compatibility. The documented structures and validation methods ensure reliable parsing of Traktor collections across different versions and corruption scenarios.
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM. Original research attribution is retained above and in [NOTICE.md](../NOTICE.md).**
 

@@ -1,8 +1,8 @@
-# Traktor Bridge 2.0 - Rekordbox Technical Specification Guide
+# Traktor Bridge 2.1.0 - Rekordbox Technical Specification Guide
 
 ## Introduction
 
-The Rekordbox ecosystem from Pioneer DJ constitutes the core data system for professional DJ hardware and software. This proprietary format stores comprehensive DJ library information including metadata, playlists, cue points, beat grids, waveforms, and advanced audio analysis data. This specification provides a complete technical reference for CDJ hardware and database formats.
+The Rekordbox ecosystem from Pioneer DJ constitutes the core data system for DJ hardware and software. This proprietary format stores DJ library information including metadata, playlists, cue points, beat grids, waveforms, and audio analysis data. This specification provides a technical reference for CDJ hardware and database formats.
 
 ## Table of Contents
 
@@ -93,7 +93,7 @@ This specification is based on:
 3. **Hardware Protocol Research**: CDJ communication and file transfer protocols
 4. **Practical Implementation**: Validation through working software libraries and hardware testing
 5. **Cross-Reference Validation**: Verification across multiple implementation approaches
-6. **Hardware Reverse Engineering**: Binary format analysis through professional DJ hardware testing
+6. **Hardware Reverse Engineering**: Binary format analysis through DJ hardware testing
 7. **Collaborative Research Integration**: Synthesized findings from multiple independent researchers
 
 ### Important Documentation Disclaimer
@@ -133,7 +133,7 @@ This specification is based on:
 
 #### Mixer Integration
 - **DJM-900NXS/2000**: Network-capable mixers
-- **DJM-A9/V10**: Professional series with advanced connectivity
+- **DJM-A9/V10**: DJ mixers with advanced connectivity
 
 ### Media Compatibility
 
@@ -934,7 +934,7 @@ bool validate_page(page_t* page) {
 
 ## Conclusion
 
-The Rekordbox ecosystem combines many years of technical evolution spanning professional DJ hardware and software platforms. The DeviceSQL → SQLite migration modernizes the infrastructure while preserving backward compatibility across CDJ generations. Existing tools (crate-digger, pyrekordbox) offer complementary approaches for an optimal hybrid development strategy.
+The Rekordbox ecosystem combines many years of technical evolution spanning DJ hardware and software platforms. The DeviceSQL to SQLite migration modernizes the infrastructure while preserving backward compatibility across CDJ generations. Existing tools such as crate-digger and pyrekordbox offer complementary approaches for development.
 
 This specification enables robust Rekordbox parsing for production DJ software with comprehensive error handling and version compatibility. The documented structures and validation methods ensure reliable parsing of Rekordbox collections across different versions and corruption scenarios.
 
@@ -944,6 +944,6 @@ Understanding the binary formats, network protocols, and hardware constraints al
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM. Original upstream attribution is retained in [NOTICE.md](../NOTICE.md).**

@@ -1,17 +1,14 @@
-# Traktor Bridge 2.0 - API Reference
+# Traktor Bridge 2.1.0 - API Reference
 
 ## Introduction
 
-This document provides a complete API reference for Traktor Bridge 2.0, covering all modules, classes, and functions available for developers. The API enables integration with Traktor collections, advanced audio analysis, and export to multiple DJ hardware and software formats.
+This document provides the API reference for Traktor Bridge 2.1.0, covering the parser, exporters, utilities, and data structures used for Traktor collection conversion.
 
 ## Sources and Attribution
 
 ### Author
-**Benoit (BSM) Saint-Moulin**
-* **Website**: www.benoitsaintmoulin.com
-* **Developer Portfolio**: www.bsm3d.com
-* **GitHub**: [github.com/bsm3d](https://github.com/bsm3d)
-* **Instagram**: [@benoitsaintmoulin](https://www.instagram.com/benoitsaintmoulin)
+**ABUZUCOM**
+* **GitHub**: [github.com/abuzucom](https://github.com/abuzucom)
 
 ## Table of Contents
 
@@ -1039,6 +1036,6 @@ print(f"Exported {count} M3U playlists")
 
 ---
 
-Documentation version 2.0 - November 2025
+Documentation version 2.1.0 - August 2026
 
-**Made with ❤️ by Benoit (BSM) Saint-Moulin**
+**Maintained by ABUZUCOM**

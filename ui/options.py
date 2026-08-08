@@ -28,6 +28,7 @@ class OptionsDialog(QDialog):
             QDialog {{
                 background-color: {self.app_config.COLORS['bg_dark']};
                 color: {self.app_config.COLORS['fg_light']};
+                font-family: '{self.app_config.FONTS['editorial']}';
             }}
             QLabel {{ 
                 color: {self.app_config.COLORS['fg_light']}; 
@@ -38,6 +39,7 @@ class OptionsDialog(QDialog):
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
+                font-family: '{self.app_config.FONTS['utility']}';
             }}
             QPushButton:hover {{ 
                 background-color: {self.app_config.COLORS['bg_light']}; 
@@ -90,7 +92,8 @@ class OptionsDialog(QDialog):
                 background-color: {self.app_config.COLORS['bg_light']};
             }}
             QGroupBox {{
-                font-weight: bold;
+                font-family: '{self.app_config.FONTS['utility']}';
+                font-weight: 700;
                 color: {self.app_config.COLORS['accent']};
                 border: 1px solid {self.app_config.COLORS['bg_light']};
                 border-radius: 4px;
@@ -114,7 +117,7 @@ class OptionsDialog(QDialog):
         
         # Title section
         title_label = QLabel("Options & Preferences")
-        title_label.setStyleSheet("font-size: 16pt; font-weight: bold;")
+        title_label.setStyleSheet(f"font-family: '{self.app_config.FONTS['display']}'; font-size: 16pt; font-weight: 900;")
         layout.addWidget(title_label)
         
         subtitle_label = QLabel("Configure export settings and application preferences")
@@ -210,7 +213,7 @@ class OptionsDialog(QDialog):
         target_layout = QVBoxLayout(target_group)
 
         target_label = QLabel("CDJ-2000NXS2")
-        target_label.setStyleSheet("font-weight: bold; font-size: 12pt;")
+        target_label.setStyleSheet(f"font-family: '{self.app_config.FONTS['display']}'; font-weight: 900; font-size: 12pt;")
         target_layout.addWidget(target_label)
 
         target_help = QLabel("Traktor Bridge is optimized for CDJ-2000NXS2 hardware export")
