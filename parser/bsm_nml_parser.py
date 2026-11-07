@@ -364,14 +364,15 @@ class TraktorNMLParser:
                 return NMLVersion.V20
         
         # Feature detection
-        has_stems = bool(self.root.find('.//STEMS'))
-        has_smart_playlists = bool(self.root.find('.//SMARTLIST'))
-        has_flexible_grids = bool(self.root.find('.//GRID'))
-        has_lock_time = bool(self.root.find('.//ENTRY[@LOCK_MODIFICATION_TIME]'))
+        has_stems = self.root.find('.//STEMS') is not None
+        has_smart_playlists = self.root.find('.//SMARTLIST') is not None
+        has_flexible_grids = self.root.find('.//GRID') is not None
+        has_beat_grid = self.root.find('.//BEATGRID') is not None
+        has_lock_time = self.root.find('.//ENTRY[@LOCK_MODIFICATION_TIME]') is not None
         
         if (version_attr == '20' or version_attr == '19+' or version_attr.startswith('20') or
             has_stems or has_smart_playlists or
-            has_flexible_grids or has_lock_time):
+            has_flexible_grids or has_beat_grid or has_lock_time):
             return NMLVersion.V20
         else:
             return NMLVersion.V19
@@ -796,7 +797,8 @@ class TraktorNMLParser:
             issues.append("Invalid duration")
         
         # Validate unique hotcue numbers
-        hotcue_numbers = [c['hotcue'] for c in track.cue_points if c['hotcue'] > 0]
+        hotcue_numbers = [cue.get('hotcue', -1) for cue in track.cue_points]
+        hotcue_numbers = [number for number in hotcue_numbers if number > 0]
         if len(hotcue_numbers) != len(set(hotcue_numbers)):
             issues.append("Duplicate hotcue numbers")
         
