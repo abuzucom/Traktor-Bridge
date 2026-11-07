@@ -2,7 +2,7 @@
 
 This repository is a fork of Traktor Bridge:
 
-- Original project: https://github.com/bsm3d/Traktor-Bridge
+- Original project: https://github.com/evmmc/Traktor-Bridge
 - Original author: Benoit (BSM) Saint-Moulin
 - Fork maintainer: ABUZUCOM
 
