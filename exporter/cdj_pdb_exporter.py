@@ -8,7 +8,7 @@ Compatible CDJ-2000NXS2 (priorité)
 import logging
 import struct
 import hashlib
-from pathlib import Path, PureWindowsPath
+from pathlib import Path, PureWindowsPath, PurePosixPath
 from typing import Dict, List, Optional, BinaryIO
 from dataclasses import dataclass
 from enum import Enum
@@ -21,6 +21,7 @@ import time
 # Constants from reverse engineering - CORRIGÉ selon specs Pioneer
 PAGE_SIZE = 4096  # Standard Pioneer (4096), CDJ-3000 peut utiliser 8192
 EMPTY_TABLE = 0x03ffffff
+INDEX_GROUP_SIZE = 0x24
 TRACK_STRING_OFFSET_START = 92
 TRACK_STRING_FIELD_COUNT = 21
 TRACK_FIXED_SIZE = TRACK_STRING_OFFSET_START + TRACK_STRING_FIELD_COUNT * 2
@@ -245,26 +246,25 @@ class TrackRow:
         return bytes(fixed_part) + bytes(strings_data)
     
     def _ensure_relative_path(self, file_path: str) -> str:
-        """Force le chemin à être relatif (Contents/...) - ROBUSTESSE CRITIQUE
+        """Ensure file path is relative (Contents/...) for CDJ USB compatibility.
         
-        Empêche l'écriture de chemins absolus (C:/, D:/) dans le PDB.
-        Les CDJ requièrent des chemins relatifs stricts depuis la racine USB.
+        Detects both Windows and POSIX absolute paths and converts them to
+        relative paths under Contents/.
         """
         if not file_path:
             return "unknown.mp3"
         
-        # Détecter et supprimer les chemins absolus Windows/Unix
         path_str = str(file_path)
         
-        # Supprimer les chemins absolus Windows (C:/, D:/, etc.)
+        # Detect and convert Windows and POSIX absolute paths
         windows_path = PureWindowsPath(path_str)
-        if Path(path_str).is_absolute() or windows_path.is_absolute():
-            # Chemin absolu Windows détecté, extraire le nom de fichier
+        posix_path = PurePosixPath(path_str)
+        if windows_path.is_absolute() or posix_path.is_absolute() or path_str.startswith('/'):
             self.logger.warning(f"Absolute path detected, converting to relative: {path_str}")
-            filename = windows_path.name if windows_path.is_absolute() else Path(path_str).name
+            filename = windows_path.name if windows_path.is_absolute() else posix_path.name
             return f"Contents/{filename}"
         
-        # Vérifier que le chemin commence par Contents/
+        # Ensure path starts with Contents/
         if not path_str.startswith('Contents/'):
             self.logger.warning(f"Path doesn't start with Contents/, fixing: {path_str}")
             return f"Contents/{path_str}"
@@ -359,7 +359,7 @@ class Page:
     def _index_size(self, row_count: int) -> int:
         """Return reserved index bytes for a row count."""
         group_count = (row_count + 15) // 16
-        return group_count * 0x24
+        return group_count * INDEX_GROUP_SIZE
 
     def add_row(self, row_data: bytes) -> bool:
         """Ajouter une ligne si espace suffisant"""
@@ -412,8 +412,8 @@ class Page:
         num_groups = (num_rows - 1) // 16 + 1
         
         for group_index in range(num_groups):
-            # Position de base du groupe
-            base_offset = self.page_size - (group_index + 1) * 0x24
+            # Base offset of the index group, aligned with page end
+            base_offset = self.page_size - group_index * INDEX_GROUP_SIZE
             
             # Flags de présence (tous les bits à 1 pour les lignes présentes)
             start_row = group_index * 16

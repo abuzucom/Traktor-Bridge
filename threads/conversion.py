@@ -57,7 +57,10 @@ class ConversionThread(QThread):
             else:
                 raise ValueError(f"Unknown export format: {self.export_format}")
             
-            self.finished.emit("completed", "Successfully exported playlists")
+            if self.cancel_event.is_set():
+                self.finished.emit("cancelled", "Conversion cancelled by user")
+            else:
+                self.finished.emit("completed", "Successfully exported playlists")
                 
         except Exception as e:
             logging.error(f"Conversion failed: {e}", exc_info=True)
