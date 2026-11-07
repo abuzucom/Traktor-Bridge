@@ -40,6 +40,10 @@ class ConversionThread(QThread):
         """Execute conversion in background thread."""
         try:
             self.logger.info(f"Starting conversion: {self.export_format}")
+
+            if self.cancel_event.is_set():
+                self.finished.emit("cancelled", "Conversion cancelled before export")
+                return
             
             # Router selon format d'export CORRIGÉ
             if self.export_format in ["CDJUSB", "CDJ/USB", "Database"]:
@@ -53,10 +57,7 @@ class ConversionThread(QThread):
             else:
                 raise ValueError(f"Unknown export format: {self.export_format}")
             
-            if self.cancel_event.is_set():
-                self.finished.emit("cancelled", "Conversion cancelled by user")
-            else:
-                self.finished.emit("completed", "Successfully exported playlists")
+            self.finished.emit("completed", "Successfully exported playlists")
                 
         except Exception as e:
             logging.error(f"Conversion failed: {e}", exc_info=True)
@@ -365,11 +366,15 @@ def validate_conversion_settings(settings: Dict) -> Dict:
 
 def estimate_conversion_time(tracks_count: int, export_format: str, copy_audio: bool = True) -> float:
     """Estimer temps de conversion en secondes"""
+    if tracks_count < 0:
+        raise ValueError("tracks_count must be non-negative")
+
     base_time_per_track = {
         "CDJ/USB": 0.5,  # PDB + ANLZ generation
         "Database": 0.5,
         "Rekordbox Database": 0.3,  # SQLite plus rapide
         "XML": 0.1,  # XML simple
+        "Rekordbox XML": 0.1,
         "M3U": 0.05  # M3U très rapide
     }
     

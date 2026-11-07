@@ -10,7 +10,17 @@ This project follows [Semantic Versioning 2.0.0](https://semver.org/):
 
 ## [Unreleased]
 
-Changes planned for the next release will be listed here.
+### Fixed
+
+- Prevented export-format changes from dereferencing a nonexistent CDJ model control.
+- Aligned M3U UI state handling with the visible `M3U` format name.
+- Detected Traktor Pro 4 feature markers even when their XML elements are empty.
+- Preserved all PDB track string offsets and rejected rows that cannot fit a page.
+- Preserved PDB page sizes and reference table types during serialization.
+- Normalized Windows paths with either slash direction before CDJ export.
+- Rejected negative conversion track counts and corrected Rekordbox XML time estimates.
+- Avoided reporting a completed export as cancelled when cancellation arrives after export.
+- Made track validation tolerate cue dictionaries without a hotcue field.
 
 ## [2.1.0] - 2026-08-08
 

@@ -8,7 +8,7 @@ Compatible CDJ-2000NXS2 (priorité)
 import logging
 import struct
 import hashlib
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Dict, List, Optional, BinaryIO
 from dataclasses import dataclass
 from enum import Enum
@@ -21,6 +21,9 @@ import time
 # Constants from reverse engineering - CORRIGÉ selon specs Pioneer
 PAGE_SIZE = 4096  # Standard Pioneer (4096), CDJ-3000 peut utiliser 8192
 EMPTY_TABLE = 0x03ffffff
+TRACK_STRING_OFFSET_START = 92
+TRACK_STRING_FIELD_COUNT = 21
+TRACK_FIXED_SIZE = TRACK_STRING_OFFSET_START + TRACK_STRING_FIELD_COUNT * 2
 
 class PageType(Enum):
     """Types de pages DeviceSQL selon spécifications Kaitai"""
@@ -86,7 +89,7 @@ class PageHeader:
                           self.next_page, self.sequence, self.gap2,
                           self.num_rows_small, self.bitmask, self.gap3,
                           self.page_flags, self.free_size, self.used_size,
-                          self.gap4, self.num_rows_large, self.gap5)
+                          self.gap4, self.num_rows_large, self.gap5) + b'\x00\x00'
 
 class DeviceSQLString:
     """Encodage des chaînes DeviceSQL selon spécifications Kaitai - CORRIGÉ"""
@@ -146,8 +149,8 @@ class TrackRow:
     
     def to_bytes(self) -> bytes:
         """Generate binary track row selon format exact CORRIGÉ"""
-        # Structure fixe (96 bytes pour accommoder tous les champs + strings)
-        fixed_part = bytearray(96)
+        # Reserve space for the fixed fields and all string offsets.
+        fixed_part = bytearray(TRACK_FIXED_SIZE)
         
         # Magic word et index shift - CORRIGÉ selon observations
         struct.pack_into('<HH', fixed_part, 0, 0x2400, 0x100)  # Magic observé dans real PDB
@@ -202,7 +205,7 @@ class TrackRow:
         # Générer les chaînes avec encodage correct
         strings_data = bytearray()
         string_offsets = []
-        current_offset = 96  # Début des chaînes après structure fixe
+        current_offset = TRACK_FIXED_SIZE
         
         # 21 chaînes requises selon format CDJ
         string_fields = [
@@ -236,12 +239,8 @@ class TrackRow:
             strings_data.extend(encoded_string)
             current_offset += len(encoded_string)
         
-        # Écrire les offsets dans la partie fixe (21 offsets de 2 bytes)
-        # Position 96-42 = 54 pour les offsets (ou utiliser 92 pour laisser 4 bytes après struct à offset 80)
-        offset_start = 92  # Ajusté pour structure 96 bytes (après les 12 bytes à offset 80)
         for i, offset in enumerate(string_offsets):
-            if offset_start + (i * 2) < 96:  # Vérifier bounds
-                struct.pack_into('<H', fixed_part, offset_start + (i * 2), offset)
+            struct.pack_into('<H', fixed_part, TRACK_STRING_OFFSET_START + (i * 2), offset)
         
         return bytes(fixed_part) + bytes(strings_data)
     
@@ -258,15 +257,12 @@ class TrackRow:
         path_str = str(file_path)
         
         # Supprimer les chemins absolus Windows (C:/, D:/, etc.)
-        if len(path_str) >= 3 and path_str[1:3] == ':\\':
+        windows_path = PureWindowsPath(path_str)
+        if Path(path_str).is_absolute() or windows_path.is_absolute():
             # Chemin absolu Windows détecté, extraire le nom de fichier
             self.logger.warning(f"Absolute path detected, converting to relative: {path_str}")
-            return f"Contents/{Path(path_str).name}"
-        
-        # Supprimer les chemins absolus Unix (/home/...)
-        if path_str.startswith('/'):
-            self.logger.warning(f"Unix absolute path detected, converting to relative: {path_str}")
-            return f"Contents/{Path(path_str).name}"
+            filename = windows_path.name if windows_path.is_absolute() else Path(path_str).name
+            return f"Contents/{filename}"
         
         # Vérifier que le chemin commence par Contents/
         if not path_str.startswith('Contents/'):
@@ -281,7 +277,7 @@ class TrackRow:
             return 0
         
         # Traktor: 0-255, Rekordbox: 0-5
-        normalized = float(traktor_rating) / 255.0
+        normalized = max(0.0, min(float(traktor_rating), 255.0)) / 255.0
         return int(normalized * 5)
 
 class ArtistRow:
@@ -360,10 +356,15 @@ class Page:
         self.heap_size = 0
         self.page_size = page_size
         
+    def _index_size(self, row_count: int) -> int:
+        """Return reserved index bytes for a row count."""
+        group_count = (row_count + 15) // 16
+        return group_count * 0x24
+
     def add_row(self, row_data: bytes) -> bool:
         """Ajouter une ligne si espace suffisant"""
-        required_space = len(row_data) + 2  # +2 pour offset dans index
-        available = self.page_size - 40 - self.heap_size - (len(self.rows) + 1) * 2
+        required_space = len(row_data)
+        available = self.page_size - 40 - self.heap_size - self._index_size(len(self.rows) + 1)
         
         if required_space > available:
             return False
@@ -378,7 +379,7 @@ class Page:
         self.header.num_rows_small = len(self.rows)
         self.header.num_rows_large = len(self.rows)
         self.header.used_size = self.heap_size
-        self.header.free_size = self.page_size - 40 - self.heap_size - len(self.rows) * 2
+        self.header.free_size = self.page_size - 40 - self.heap_size - self._index_size(len(self.rows))
         
         return True
     
@@ -501,21 +502,21 @@ class PDBExporter:
             artists_pages = self._create_table_pages(PageType.ARTISTS)
             for artist_name, artist_id in artists_map.items():
                 row = ArtistRow(artist_name, artist_id)
-                self._add_row_to_pages(artists_pages, row.to_bytes())
+                self._add_row_to_pages(artists_pages, row.to_bytes(), PageType.ARTISTS)
         
         # Pages Albums  
         if albums_map:
             albums_pages = self._create_table_pages(PageType.ALBUMS)
             for album_name, album_id in albums_map.items():
                 row = AlbumRow(album_name, album_id)
-                self._add_row_to_pages(albums_pages, row.to_bytes())
+                self._add_row_to_pages(albums_pages, row.to_bytes(), PageType.ALBUMS)
         
         # Pages Genres
         if genres_map:
             genres_pages = self._create_table_pages(PageType.GENRES)
             for genre_name, genre_id in genres_map.items():
                 row = GenreRow(genre_name, genre_id)
-                self._add_row_to_pages(genres_pages, row.to_bytes())
+                self._add_row_to_pages(genres_pages, row.to_bytes(), PageType.GENRES)
     
     def _create_track_pages(self, tracks: List[Track], artists_map: Dict, 
                            albums_map: Dict, genres_map: Dict):
@@ -528,7 +529,7 @@ class PDBExporter:
             genre_id = genres_map.get(track.genre, 1)
             
             row = TrackRow(track, i, artist_id, album_id, genre_id)
-            self._add_row_to_pages(tracks_pages, row.to_bytes())
+            self._add_row_to_pages(tracks_pages, row.to_bytes(), PageType.TRACKS)
     
     def _create_table_pages(self, page_type: PageType) -> List[Page]:
         """Créer liste de pages pour une table"""
@@ -536,11 +537,11 @@ class PDBExporter:
         self.tables[page_type] = pages
         return pages
     
-    def _add_row_to_pages(self, pages: List[Page], row_data: bytes):
+    def _add_row_to_pages(self, pages: List[Page], row_data: bytes, page_type: PageType):
         """Ajouter une ligne aux pages (créer nouvelle page si nécessaire)"""
         if not pages or not pages[-1].add_row(row_data):
             # Créer nouvelle page avec page_size configurable
-            new_page = Page(pages[0].header.type if pages else PageType.TRACKS, 
+            new_page = Page(pages[0].header.type if pages else page_type,
                            self.next_page_index,
                            self.page_size)
             self.next_page_index += 1
@@ -550,7 +551,8 @@ class PDBExporter:
                 pages[-1].header.next_page = new_page.header.page_index
             
             pages.append(new_page)
-            new_page.add_row(row_data)
+            if not new_page.add_row(row_data):
+                raise ValueError(f"Row does not fit in a {self.page_size}-byte PDB page")
     
     def _write_pdb_file(self, output_path: Path):
         """Écrire le fichier PDB complet"""
@@ -559,7 +561,10 @@ class PDBExporter:
             self._write_file_header(f)
             
             # Pages (la première page est l'en-tête)
-            f.write(b'\x00' * (PAGE_SIZE - f.tell()))
+            header_size = f.tell()
+            if header_size > self.page_size:
+                raise ValueError(f"PDB header exceeds the {self.page_size}-byte page size")
+            f.write(b'\x00' * (self.page_size - header_size))
             
             # Écrire toutes les pages des tables
             for page_type, pages in self.tables.items():

@@ -544,12 +544,8 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
         """Update UI elements based on selected format"""
         format_name = self.settings['export_format']
         
-        # CDJ model selector visibility
-        is_cdj_export = format_name in ["CDJ/USB", "Database"]
-        self.cdj_model_combo.setEnabled(is_cdj_export)
-        
         # Copy options for formats that support it
-        supports_copy = format_name in ["CDJ/USB", "Database", "M3U Playlists"]
+        supports_copy = format_name in ["CDJ/USB", "Database", "Rekordbox Database", "M3U"]
         self.copy_music_check.setEnabled(supports_copy)
         self.verify_copy_check.setEnabled(supports_copy and self.copy_music_check.isChecked())
         
@@ -560,7 +556,7 @@ class ConverterGUI(QMainWindow, LoadingSystemMixin):
             self.progress_label.setText("Ready to export Rekordbox database...")
         elif format_name == "Rekordbox XML":
             self.progress_label.setText("Ready to export XML file...")
-        elif format_name == "M3U Playlists":
+        elif format_name == "M3U":
             self.progress_label.setText("Ready to export M3U playlists...")
     
     def _create_progress_section(self, parent_layout):
@@ -1326,7 +1322,6 @@ if __name__ == "__main__":
                 self.music_input.setText(self.music_root_path)
                 
                 self.export_format_button.setText(self.settings['export_format'])
-                self.cdj_model_combo.setCurrentText(self.settings['cdj_target'])
                 self.copy_music_check.setChecked(self.settings['copy_music'])
                 self.verify_copy_check.setChecked(self.settings['verify_copy'])
                 
@@ -1675,7 +1670,6 @@ if __name__ == "__main__":
         self.copy_music_check.setChecked(self.settings['copy_music'])
         self.verify_copy_check.setChecked(self.settings['verify_copy'])
         self.export_format_button.setText(self.settings['export_format'])
-        self.cdj_model_combo.setCurrentText(self.settings['cdj_target'])
         
         self._update_ui_for_format()
         
