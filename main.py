@@ -6,7 +6,7 @@ TRAKTOR BRIDGE - Traktor to Pioneer CDJ/XML/M3U Converter
 Version: 2.1.0
 Author: ABUZUCOM
 GitHub: https://github.com/abuzucom/Traktor-Bridge
-Original upstream: Benoit (BSM) Saint-Moulin - https://github.com/bsm3d/Traktor-Bridge
+Original upstream: Benoit (BSM) Saint-Moulin - https://github.com/evmmc/Traktor-Bridge
 
 ================================================================================
 LICENSE & USAGE

@@ -18,7 +18,7 @@ Traktor Bridge 2.1.0 is an application for migrating Traktor collections to Pion
 * **GitHub**: [github.com/abuzucom](https://github.com/abuzucom)
 
 ### Original Upstream Project
-Traktor Bridge by Benoit (BSM) Saint-Moulin: https://github.com/bsm3d/Traktor-Bridge
+Traktor Bridge by Benoit (BSM) Saint-Moulin: https://github.com/evmmc/Traktor-Bridge
 See [NOTICE.md](NOTICE.md) for the upstream licensing status and attribution terms.
 
 ## Table of Contents

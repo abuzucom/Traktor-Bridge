@@ -690,7 +690,7 @@ designer ui/main_window.ui
 # Clone your fork
 git clone https://github.com/abuzucom/Traktor-Bridge.git
 cd Traktor-Bridge
-git remote add upstream https://github.com/bsm3d/Traktor-Bridge.git
+git remote add upstream https://github.com/evmmc/Traktor-Bridge.git
 ```
 
 2. **Create Feature Branch**
